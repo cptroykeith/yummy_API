@@ -5,6 +5,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
 mail = Mail()
@@ -34,6 +35,8 @@ def create_app():
     create_authentication_routes(api=api)
 
     db.init_app(app)
+    migrate = Migrate(app, db)
+    mail.init_app(app)
 
     with app.app_context():
 
