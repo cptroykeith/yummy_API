@@ -43,6 +43,17 @@ def create_user(request, input_data):
         data=input_data, message="User Created", status=HTTP_201_CREATED
     )
 
+def get_all_users(request):
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        user_data = {}
+        user_data["id"] = user.id
+        user_data["username"] = user.username
+        user_data["email"] = user.email
+        user_list.append(user_data)
+    return generate_response(data=user_list, message="All users retrieved", status=HTTP_200_OK)
+
 
 def login_user(request, input_data):
     
