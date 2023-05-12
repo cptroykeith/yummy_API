@@ -33,3 +33,18 @@ class User(db.Model):
     def check_password(self, password):
         
         return check_password_hash(self.password, password)
+    
+class Category(db.Model):
+    """Data model for categories."""
+
+    __tablename__ = "categories"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    description = db.Column(db.String(500), nullable=False)
+
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name")
+        self.description = kwargs.get("description")
+
+    def __repr__(self):
+        return "<Category {}>".format(self.name)
