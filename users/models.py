@@ -16,6 +16,9 @@ class User(db.Model):
     password = db.Column(db.String(500), nullable=False)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=True)
 
+    # Define a one-to-many relationship between User and Category
+    categories = db.relationship("Category", backref="user", lazy=True)
+
     def __init__(self, **kwargs):
         
         self.username = kwargs.get("username")
@@ -41,6 +44,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     description = db.Column(db.String(500), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __init__(self, **kwargs):
         self.name = kwargs.get("name")

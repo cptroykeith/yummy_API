@@ -22,3 +22,7 @@ class CreateResetPasswordEmailSendInputSchema(Schema):
 class ResetPasswordInputSchema(Schema):
     # the 'required' argument ensures the field exists
     password = fields.Str(required=True, validate=validate.Length(min=6))
+
+class CreateCategoryInputSchema(Schema):
+    name = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$'), validate.Regexp(r'^\w+$', error="Username must be one word")])
+    description = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$')])

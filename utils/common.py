@@ -19,7 +19,7 @@ def generate_response(data=None, message=None, status=400):
         status_bool = False
 
     return {
-        "data": data,
+        "token": data,
         "message": modify_slz_error(message, status_bool),
         "status": status_bool,
     }, status
