@@ -54,6 +54,14 @@ def get_all_users(request):
         user_list.append(user_data)
     return generate_response(data=user_list, message="All users retrieved", status=HTTP_200_OK)
 
+def delete_user(request, user_id: int):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return generate_response(message="User not found", status=HTTP_400_BAD_REQUEST)
+    db.session.delete(user)
+    db.session.commit()
+    return generate_response(message="User deleted", status=HTTP_200_OK)
+
 
 def login_user(request, input_data):
     
