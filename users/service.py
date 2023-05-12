@@ -168,5 +168,17 @@ def create_category(request, category_data):
 
     return generate_response(data=category_data, message="Category created", status=HTTP_201_CREATED)
 
+def get_user_categories(request):
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
 
+    # Get all categories for user ID
+    categories = Category.query.filter_by(user_id=user_id).all()
 
+    # Serialize categories using CategorySchema
+    category_schema = CreateCategoryInputSchema(many=True)
+    categories_data = category_schema.dump(categories)
+
+    return generate_response(data=categories_data, message="Categories retrieved", status=HTTP_200_OK)
