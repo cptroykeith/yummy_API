@@ -12,7 +12,7 @@ from users.validation import (
     CreateResetPasswordEmailSendInputSchema,
     CreateSignupInputSchema, ResetPasswordInputSchema,
 )
-from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND
 
 
 def create_user(request, input_data):
@@ -54,10 +54,21 @@ def get_all_users(request):
         user_list.append(user_data)
     return generate_response(data=user_list, message="All users retrieved", status=HTTP_200_OK)
 
+def get_user_by_id(request, user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return generate_response(message="User not found", status=HTTP_404_NOT_FOUND)
+    user_data = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email
+    }
+    return generate_response(data=user_data, message="User retrieved successfully", status=HTTP_200_OK)
+
 def delete_user(request, user_id: int):
     user = User.query.filter_by(id=user_id).first()
     if not user:
-        return generate_response(message="User not found", status=HTTP_400_BAD_REQUEST)
+        return generate_response(message="User not found", status=HTTP_404_NOT_FOUND)
     db.session.delete(user)
     db.session.commit()
     return generate_response(message="User deleted", status=HTTP_200_OK)

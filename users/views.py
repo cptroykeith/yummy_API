@@ -1,7 +1,7 @@
 from flask import Response
 from flask_restful import Resource
 from flask import request, make_response
-from users.service import create_user, reset_password_email_send, login_user, reset_password, get_all_users, delete_user
+from users.service import create_user, reset_password_email_send, login_user, reset_password, get_all_users, delete_user ,get_user_by_id
 
 
 class SignUpApi(Resource):
@@ -26,6 +26,12 @@ class AllUsersApi(Resource):
     def get() -> Response:
         
         response, status = get_all_users(request)
+        return make_response(response, status)
+    
+class GetUserApi(Resource):
+    @staticmethod
+    def get(user_id) -> Response:
+        response, status = get_user_by_id(request, user_id)
         return make_response(response, status)
     
 class UserApi(Resource):
