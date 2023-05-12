@@ -52,3 +52,11 @@ class Category(db.Model):
 
     def __repr__(self):
         return "<Category {}>".format(self.name)
+    
+    def to_dict(self):
+        return {
+            #"id": self.id,
+            "name": self.name,
+            "description": self.description,
+            #"user_id": self.user_id,
+        }

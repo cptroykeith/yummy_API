@@ -168,6 +168,7 @@ def create_category(request, category_data):
 
     return generate_response(data=category_data, message="Category created", status=HTTP_201_CREATED)
 
+#Get all categories for a user
 def get_user_categories(request):
     # Get user ID from token in request headers
     token = request.headers.get('Authorization')
@@ -182,3 +183,21 @@ def get_user_categories(request):
     categories_data = category_schema.dump(categories)
 
     return generate_response(data=categories_data, message="Categories retrieved", status=HTTP_200_OK)
+
+#Get one category for a user
+def get_category(request, category_id):
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Query the category with the specified ID for the user
+    category = Category.query.filter_by(id=category_id, user_id=user_id).first()
+
+    if not category:
+        return generate_response(message="Category not found", status=HTTP_404_NOT_FOUND)
+
+    # Convert the category object to a dictionary
+    category_data = category.to_dict()
+
+    return generate_response(data=category_data, message="Category found", status=HTTP_200_OK)
