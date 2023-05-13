@@ -1,5 +1,5 @@
 from flask_restful import Api
-from users.views import LoginApi, ForgotPassword, SignUpApi, ResetPassword, AllUsersApi, UserApi, GetUserApi, CreateCategoryApi, GetUserCategoriesApi, GetCategoryApi
+from users.views import LoginApi, ForgotPassword, SignUpApi, ResetPassword, AllUsersApi, UserApi, GetUserApi, CreateCategoryApi, GetUserCategoriesApi, GetCategoryApi, EditCategoryApi
 
 
 def create_authentication_routes(api: Api):
@@ -14,3 +14,4 @@ def create_authentication_routes(api: Api):
     api.add_resource(CreateCategoryApi, "/api/categories/create/")
     api.add_resource(GetUserCategoriesApi, "/api/categories/get-categories/")
     api.add_resource(GetCategoryApi, "/api/categories/<int:category_id>/")
+    api.add_resource(EditCategoryApi, "/api/categories/<int:category_id>/edit/")

@@ -201,3 +201,33 @@ def get_category(request, category_id):
     category_data = category.to_dict()
 
     return generate_response(data=category_data, message="Category found", status=HTTP_200_OK)
+
+#Edit a category
+def edit_category(request, category_id, category_data):
+    # Validate category data using EditCategoryInputSchema
+    edit_validation_schema = CreateCategoryInputSchema()
+    errors = edit_validation_schema.validate(category_data)
+    if errors:
+        return generate_response(message=errors)
+
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Query the category with the specified ID for the user
+    category = Category.query.filter_by(id=category_id, user_id=user_id).first()
+
+    if not category:
+        return generate_response(message="Category not found", status=HTTP_404_NOT_FOUND)
+
+    # Update the category record with the new data
+    category.name = category_data.get("name")
+    category.description = category_data.get("description")
+    db.session.commit()
+
+    # Convert the category object to a dictionary
+    category_data = category.to_dict()
+
+    return generate_response(data=category_data, message="Category updated", status=HTTP_200_OK)
+

@@ -55,8 +55,8 @@ class Category(db.Model):
     
     def to_dict(self):
         return {
-            #"id": self.id,
+            "id": self.id,
             "name": self.name,
             "description": self.description,
-            #"user_id": self.user_id,
+            "user_id": self.user_id,
         }
