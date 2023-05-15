@@ -70,6 +70,7 @@ class Recipe(db.Model):
     type = db.Column(db.String(64), nullable=False)
     ingredients = db.Column(db.String(500), nullable=False)
     steps = db.Column(db.String(500), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     category = relationship("Category", backref="recipes")#A many-to-one relationship between recipe and category
 
@@ -88,5 +89,6 @@ class Recipe(db.Model):
             "type": self.type,
             "ingredients": self.ingredients,
             "steps": self.steps,
+            "user_id": self.user_id,
             "category_id": self.category_id,
         }
