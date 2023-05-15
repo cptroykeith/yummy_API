@@ -3,6 +3,7 @@ import datetime
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from server import db
+from sqlalchemy.orm import relationship
 
 
 # The User class is a data model for user accounts
@@ -59,4 +60,33 @@ class Category(db.Model):
             "name": self.name,
             "description": self.description,
             "user_id": self.user_id,
+        } 
+
+class Recipe(db.Model):
+    """Data model for recipes."""
+
+    __tablename__ = "recipes"
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(64), nullable=False)
+    ingredients = db.Column(db.String(500), nullable=False)
+    steps = db.Column(db.String(500), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    category = relationship("Category", backref="recipes")#A many-to-one relationship between recipe and category
+
+    def __init__(self, **kwargs):
+        self.type = kwargs.get("type")
+        self.ingredients = kwargs.get("ingredients")
+        self.steps = kwargs.get("steps")
+        self.category_id = kwargs.get("category_id")
+
+    def __repr__(self):
+        return "<Recipe {}>".format(self.type)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "type": self.type,
+            "ingredients": self.ingredients,
+            "steps": self.steps,
+            "category_id": self.category_id,
         }
