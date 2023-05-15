@@ -28,6 +28,8 @@ class CreateCategoryInputSchema(Schema):
     description = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$')])
 
 class CreateRecipeInputSchema(Schema):
+    # the 'required' argument ensures the field exists
     type = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$'), validate.Regexp(r'^\w+$', error="Type must be one word")])
     ingredients = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$')])
     steps = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$')])
+    category_id = fields.Int(required=True)

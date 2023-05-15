@@ -4,13 +4,13 @@ import datetime
 from server import db
 from os import environ
 from users.helper import send_forgot_password_email
-from users.models import User, Category
+from users.models import User, Category, Recipe
 from flask_bcrypt import generate_password_hash
 from utils.common import generate_response, TokenGenerator
 from users.validation import (
     CreateLoginInputSchema,
     CreateResetPasswordEmailSendInputSchema,
-    CreateSignupInputSchema, ResetPasswordInputSchema, CreateCategoryInputSchema,
+    CreateSignupInputSchema, ResetPasswordInputSchema, CreateCategoryInputSchema, CreateRecipeInputSchema
 )
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED
 
@@ -249,3 +249,32 @@ def delete_category(request, category_id):
     db.session.commit()
 
     return generate_response(message="Category deleted", status=HTTP_200_OK)
+
+
+#Recipes
+
+#Create Recipe
+
+def create_recipe(request, recipe_data):
+    # Validate recipe data using a validation schema
+    create_validation_schema = CreateRecipeInputSchema()
+    errors = create_validation_schema.validate(recipe_data)
+    if errors:
+        return generate_response(message=errors)
+
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Get category ID from recipe_data or other source if needed
+    category_id = recipe_data.get('category_id')
+
+    # Create new recipe with user ID and category ID
+    new_recipe = Recipe(**recipe_data)
+    new_recipe.user_id = user_id
+    new_recipe.category_id = category_id
+    db.session.add(new_recipe)
+    db.session.commit()
+
+    return generate_response(data=recipe_data, message="Recipe created", status=HTTP_201_CREATED)
