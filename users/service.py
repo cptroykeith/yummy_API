@@ -231,3 +231,21 @@ def edit_category(request, category_id, category_data):
 
     return generate_response(data=category_data, message="Category updated", status=HTTP_200_OK)
 
+#Delete a category
+def delete_category(request, category_id):
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Query the category with the specified ID for the user
+    category = Category.query.filter_by(id=category_id, user_id=user_id).first()
+
+    if not category:
+        return generate_response(message="Category not found", status=HTTP_404_NOT_FOUND)
+
+    # Delete the category from the database
+    db.session.delete(category)
+    db.session.commit()
+
+    return generate_response(message="Category deleted", status=HTTP_200_OK)
