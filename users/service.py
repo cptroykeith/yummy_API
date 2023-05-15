@@ -4,13 +4,13 @@ import datetime
 from server import db
 from os import environ
 from users.helper import send_forgot_password_email
-from users.models import User, Category
+from users.models import User, Category, Recipe
 from flask_bcrypt import generate_password_hash
 from utils.common import generate_response, TokenGenerator
 from users.validation import (
     CreateLoginInputSchema,
     CreateResetPasswordEmailSendInputSchema,
-    CreateSignupInputSchema, ResetPasswordInputSchema, CreateCategoryInputSchema,
+    CreateSignupInputSchema, ResetPasswordInputSchema, CreateCategoryInputSchema, CreateRecipeInputSchema
 )
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED
 
@@ -90,7 +90,7 @@ def login_user(request, input_data):
                 "id": get_user.id,
                 "email": get_user.email,
                 "username": get_user.username,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
             },
             environ.get("SECRET_KEY"),
         )
@@ -159,6 +159,11 @@ def create_category(request, category_data):
     token = request.headers.get('Authorization')
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
+
+    # Check if the category already exists
+    existing_category = Category.query.filter_by(name=category_data['name'], user_id=user_id).first()
+    if existing_category:
+        return generate_response(message="Category already exists", status=HTTP_400_BAD_REQUEST)
     
     # Create new category with user ID
     new_category = Category(**category_data)
@@ -249,3 +254,112 @@ def delete_category(request, category_id):
     db.session.commit()
 
     return generate_response(message="Category deleted", status=HTTP_200_OK)
+
+
+#Recipes
+
+#Create Recipe
+
+def create_recipe(request, recipe_data):
+    # Validate recipe data using a validation schema
+    create_validation_schema = CreateRecipeInputSchema()
+    errors = create_validation_schema.validate(recipe_data)
+    if errors:
+        return generate_response(message=errors)
+
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Get category ID from recipe_data or other source if needed
+    category_id = recipe_data.get('category_id')
+
+    # Check if the recipe already exists for the given user and category
+    existing_recipe = Recipe.query.filter_by(user_id=user_id, category_id=category_id, id=recipe_data.get('recipe_id')).first()
+    if existing_recipe:
+        return generate_response(
+            message="Recipe already exists for the given user and category",
+            status=HTTP_400_BAD_REQUEST
+        )
+
+    # Create new recipe with user ID and category ID
+    new_recipe = Recipe(**recipe_data)
+    new_recipe.user_id = user_id
+    new_recipe.category_id = category_id
+    db.session.add(new_recipe)
+    db.session.commit()
+
+    return generate_response(data=recipe_data, message="Recipe created", status=HTTP_201_CREATED)
+
+
+# Getting all recipes for a particular category and user
+
+def get_recipes_by_category(user_id, category_id):
+    recipes = Recipe.query.filter_by(user_id=user_id, category_id=category_id).all()
+    
+    if not recipes:
+        return generate_response(message="No recipes found for the given user and category", status=HTTP_404_NOT_FOUND)
+    
+    recipe_data = [recipe.to_dict() for recipe in recipes]
+    return generate_response(data=recipe_data, message="Recipes retrieved successfully", status=HTTP_200_OK)
+
+# Get one recipe from recipe table
+
+def get_recipe_by_id(user_id, category_id, recipe_id):
+    recipe = Recipe.query.filter_by(user_id=user_id, category_id=category_id, id=recipe_id).first()
+
+    if not recipe:
+        return generate_response(message="Recipe not found", status=HTTP_404_NOT_FOUND)
+
+    recipe_data = recipe.to_dict()
+    return generate_response(data=recipe_data, message="Recipe retrieved successfully", status=HTTP_200_OK)
+
+#Editing a recipe
+
+def edit_recipe(request, category_id, recipe_id, recipe_data):
+    # Validate recipe data using a validation schema
+    edit_validation_schema = CreateRecipeInputSchema()
+    errors = edit_validation_schema.validate(recipe_data)
+    if errors:
+        return generate_response(message=errors)
+
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Retrieve the recipe to be edited
+    recipe = Recipe.query.filter_by(id=recipe_id, category_id=category_id, user_id=user_id).first()
+    if not recipe:
+        return generate_response(message="Recipe not found", status=HTTP_404_NOT_FOUND)
+
+    # Update the recipe with the new data
+    recipe.type = recipe_data.get('type')
+    recipe.ingredients = recipe_data.get('ingredients')
+    recipe.steps = recipe_data.get('steps')
+    recipe.category_id = recipe_data.get('category_id')
+
+    db.session.commit()
+
+    return generate_response(data=recipe.to_dict(), message="Recipe edited successfully", status=HTTP_200_OK)
+
+# Deleting a recipe
+
+def delete_recipe(request, category_id, recipe_id):
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Retrieve the recipe to be deleted
+    recipe = Recipe.query.filter_by(id=recipe_id, category_id=category_id, user_id=user_id).first()
+    if not recipe:
+        return generate_response(message="Recipe not found", status=HTTP_404_NOT_FOUND)
+
+    # Delete the recipe
+    db.session.delete(recipe)
+    db.session.commit()
+
+    return generate_response(message="Recipe deleted", status=HTTP_200_OK)
+

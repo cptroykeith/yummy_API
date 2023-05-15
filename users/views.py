@@ -1,8 +1,11 @@
 from flask import Response
 from flask_restful import Resource
 from flask import request, make_response
-from users.service import create_user, reset_password_email_send, login_user, reset_password, get_all_users, delete_user ,get_user_by_id, create_category, get_user_categories, get_category, edit_category, delete_category
-
+from users.service import (create_user, delete_recipe, edit_recipe, get_recipe_by_id, get_recipes_by_category, reset_password_email_send, 
+login_user, reset_password, get_all_users, delete_user ,get_user_by_id,
+create_category, get_user_categories, get_category, edit_category,
+delete_category, create_recipe )
+from utils.common import TokenGenerator
 
 class SignUpApi(Resource):
     @staticmethod
@@ -88,3 +91,53 @@ class DeleteCategoryApi(Resource):
     def delete(category_id: int) -> Response:
         response, status = delete_category(request, category_id)
         return make_response(response, status)
+
+class CreateRecipeApi(Resource):
+    @staticmethod
+    def post() -> Response:
+        recipe_data = request.get_json()
+        response, status = create_recipe(request, recipe_data)
+        return make_response(response, status)
+    
+class GetRecipesByCategoryApi(Resource):
+    @staticmethod
+    def get(category_id: int) -> Response:
+        # Get user ID from token in request headers
+        token = request.headers.get('Authorization')
+        decoded_token = TokenGenerator.decode_token(token)
+        user_id = decoded_token.get('id')
+
+        # Retrieve recipes for the given user and category
+        response = get_recipes_by_category(user_id, category_id)
+        return make_response(response)
+    
+class GetRecipeByCategoryApi(Resource):
+    @staticmethod
+    def get(category_id: int, recipe_id: int) -> Response:
+        # Get user ID from token in request headers
+        token = request.headers.get('Authorization')
+        decoded_token = TokenGenerator.decode_token(token)
+        user_id = decoded_token.get('id')
+
+        # Retrieve the recipe for the given user, category, and recipe ID
+        response = get_recipe_by_id(user_id, category_id, recipe_id)
+        return make_response(response)
+
+class EditRecipeApi(Resource):
+    @staticmethod
+    def put(category_id: int, recipe_id: int) -> Response:
+        recipe_data = request.get_json()
+        response, status = edit_recipe(request, category_id, recipe_id, recipe_data)
+        return make_response(response, status)
+    
+class DeleteRecipeApi(Resource):
+    @staticmethod
+    def delete(category_id: int, recipe_id: int) -> Response:
+        # Get user ID from token in request headers
+        token = request.headers.get('Authorization')
+        decoded_token = TokenGenerator.decode_token(token)
+        user_id = decoded_token.get('id')
+
+        # Delete the recipe for the given user and category
+        response = delete_recipe(request, category_id, recipe_id)
+        return make_response(response)

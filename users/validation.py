@@ -24,5 +24,12 @@ class ResetPasswordInputSchema(Schema):
     password = fields.Str(required=True, validate=validate.Length(min=6))
 
 class CreateCategoryInputSchema(Schema):
-    name = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$'), validate.Regexp(r'^\w+$', error="Username must be one word")])
+    name = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$'), validate.Regexp(r'^\w+$', error="Category must be one word")])
     description = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$')])
+
+class CreateRecipeInputSchema(Schema):
+    # the 'required' argument ensures the field exists
+    type = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$'), validate.Regexp(r'^\w+$', error="Type must be one word")])
+    ingredients = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$')])
+    steps = fields.Str(required=True, validate=[validate.Length(min=4), validate.Regexp(r'^\S.*\S$')])
+    category_id = fields.Int(required=True)

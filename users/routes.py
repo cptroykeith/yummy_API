@@ -1,5 +1,8 @@
 from flask_restful import Api
-from users.views import LoginApi, ForgotPassword, SignUpApi, ResetPassword, AllUsersApi, UserApi, GetUserApi, CreateCategoryApi, GetUserCategoriesApi, GetCategoryApi, EditCategoryApi, DeleteCategoryApi
+from users.views import (DeleteRecipeApi, EditRecipeApi, GetRecipeByCategoryApi, GetRecipesByCategoryApi, LoginApi, ForgotPassword, SignUpApi,
+ResetPassword, AllUsersApi, UserApi, GetUserApi, CreateCategoryApi,
+GetUserCategoriesApi, GetCategoryApi, EditCategoryApi, DeleteCategoryApi,
+CreateRecipeApi)
 
 
 def create_authentication_routes(api: Api):
@@ -16,3 +19,8 @@ def create_authentication_routes(api: Api):
     api.add_resource(GetCategoryApi, "/api/categories/<int:category_id>/")
     api.add_resource(EditCategoryApi, "/api/categories/<int:category_id>/edit/")
     api.add_resource(DeleteCategoryApi, "/api/categories/<int:category_id>/delete/")
+    api.add_resource(CreateRecipeApi, "/api/recipes/create/")
+    api.add_resource(GetRecipesByCategoryApi, "/api/categories/<int:category_id>/recipes/")
+    api.add_resource(GetRecipeByCategoryApi, "/api/categories/<int:category_id>/recipes/<int:recipe_id>/")
+    api.add_resource(EditRecipeApi, "/api/categories/<int:category_id>/recipes/<int:recipe_id>/")
+    api.add_resource(DeleteRecipeApi, "/api/categories/<int:category_id>/recipes/<int:recipe_id>/")
