@@ -1,7 +1,7 @@
 from flask import Response
 from flask_restful import Resource
 from flask import request, make_response
-from users.service import (create_user, get_recipe_by_id, get_recipes_by_category, reset_password_email_send, 
+from users.service import (create_user, edit_recipe, get_recipe_by_id, get_recipes_by_category, reset_password_email_send, 
 login_user, reset_password, get_all_users, delete_user ,get_user_by_id,
 create_category, get_user_categories, get_category, edit_category,
 delete_category, create_recipe )
@@ -122,3 +122,10 @@ class GetRecipeByCategoryApi(Resource):
         # Retrieve the recipe for the given user, category, and recipe ID
         response = get_recipe_by_id(user_id, category_id, recipe_id)
         return make_response(response)
+
+class EditRecipeApi(Resource):
+    @staticmethod
+    def put(category_id: int, recipe_id: int) -> Response:
+        recipe_data = request.get_json()
+        response, status = edit_recipe(request, category_id, recipe_id, recipe_data)
+        return make_response(response, status)

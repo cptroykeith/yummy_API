@@ -90,7 +90,7 @@ def login_user(request, input_data):
                 "id": get_user.id,
                 "email": get_user.email,
                 "username": get_user.username,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
             },
             environ.get("SECRET_KEY"),
         )
@@ -314,3 +314,32 @@ def get_recipe_by_id(user_id, category_id, recipe_id):
 
     recipe_data = recipe.to_dict()
     return generate_response(data=recipe_data, message="Recipe retrieved successfully", status=HTTP_200_OK)
+
+#Editing a recipe
+
+def edit_recipe(request, category_id, recipe_id, recipe_data):
+    # Validate recipe data using a validation schema
+    edit_validation_schema = CreateRecipeInputSchema()
+    errors = edit_validation_schema.validate(recipe_data)
+    if errors:
+        return generate_response(message=errors)
+
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Retrieve the recipe to be edited
+    recipe = Recipe.query.filter_by(id=recipe_id, category_id=category_id, user_id=user_id).first()
+    if not recipe:
+        return generate_response(message="Recipe not found", status=HTTP_404_NOT_FOUND)
+
+    # Update the recipe with the new data
+    recipe.type = recipe_data.get('type')
+    recipe.ingredients = recipe_data.get('ingredients')
+    recipe.steps = recipe_data.get('steps')
+    recipe.category_id = recipe_data.get('category_id')
+
+    db.session.commit()
+
+    return generate_response(data=recipe.to_dict(), message="Recipe edited successfully", status=HTTP_200_OK)
