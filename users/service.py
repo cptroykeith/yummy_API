@@ -4,15 +4,15 @@ import datetime
 from server import db
 from os import environ
 from users.helper import send_forgot_password_email
-from users.models import User
+from users.models import User, Category
 from flask_bcrypt import generate_password_hash
 from utils.common import generate_response, TokenGenerator
 from users.validation import (
     CreateLoginInputSchema,
     CreateResetPasswordEmailSendInputSchema,
-    CreateSignupInputSchema, ResetPasswordInputSchema,
+    CreateSignupInputSchema, ResetPasswordInputSchema, CreateCategoryInputSchema,
 )
-from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND
+from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED
 
 
 def create_user(request, input_data):
@@ -96,7 +96,7 @@ def login_user(request, input_data):
         )
         input_data["token"] = token
         return generate_response(
-            data=input_data, message="User login successfully", status=HTTP_201_CREATED
+            data = token, message="User login successfully", status=HTTP_201_CREATED
         )
     else:
         return generate_response(
@@ -145,3 +145,89 @@ def reset_password(request, input_data, token):
     return generate_response(
         message="New password SuccessFully set.", status=HTTP_200_OK
     )
+
+# categories
+
+def create_category(request, category_data):
+    # Validate category data using CreateCategoryInputSchema
+    create_validation_schema = CreateCategoryInputSchema()
+    errors = create_validation_schema.validate(category_data)
+    if errors:
+        return generate_response(message=errors)
+
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+    
+    # Create new category with user ID
+    new_category = Category(**category_data)
+    new_category.user_id = user_id
+    db.session.add(new_category)
+    db.session.commit()
+
+    return generate_response(data=category_data, message="Category created", status=HTTP_201_CREATED)
+
+#Get all categories for a user
+def get_user_categories(request):
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Get all categories for user ID
+    categories = Category.query.filter_by(user_id=user_id).all()
+
+    # Serialize categories using CategorySchema
+    category_schema = CreateCategoryInputSchema(many=True)
+    categories_data = category_schema.dump(categories)
+
+    return generate_response(data=categories_data, message="Categories retrieved", status=HTTP_200_OK)
+
+#Get one category for a user
+def get_category(request, category_id):
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Query the category with the specified ID for the user
+    category = Category.query.filter_by(id=category_id, user_id=user_id).first()
+
+    if not category:
+        return generate_response(message="Category not found", status=HTTP_404_NOT_FOUND)
+
+    # Convert the category object to a dictionary
+    category_data = category.to_dict()
+
+    return generate_response(data=category_data, message="Category found", status=HTTP_200_OK)
+
+#Edit a category
+def edit_category(request, category_id, category_data):
+    # Validate category data using EditCategoryInputSchema
+    edit_validation_schema = CreateCategoryInputSchema()
+    errors = edit_validation_schema.validate(category_data)
+    if errors:
+        return generate_response(message=errors)
+
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Query the category with the specified ID for the user
+    category = Category.query.filter_by(id=category_id, user_id=user_id).first()
+
+    if not category:
+        return generate_response(message="Category not found", status=HTTP_404_NOT_FOUND)
+
+    # Update the category record with the new data
+    category.name = category_data.get("name")
+    category.description = category_data.get("description")
+    db.session.commit()
+
+    # Convert the category object to a dictionary
+    category_data = category.to_dict()
+
+    return generate_response(data=category_data, message="Category updated", status=HTTP_200_OK)
+
