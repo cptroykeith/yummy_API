@@ -1,5 +1,5 @@
 from flask_restful import Api
-from users.views import (LoginApi, ForgotPassword, SignUpApi,
+from users.views import (GetRecipesByCategoryApi, LoginApi, ForgotPassword, SignUpApi,
 ResetPassword, AllUsersApi, UserApi, GetUserApi, CreateCategoryApi,
 GetUserCategoriesApi, GetCategoryApi, EditCategoryApi, DeleteCategoryApi,
 CreateRecipeApi)
@@ -20,3 +20,4 @@ def create_authentication_routes(api: Api):
     api.add_resource(EditCategoryApi, "/api/categories/<int:category_id>/edit/")
     api.add_resource(DeleteCategoryApi, "/api/categories/<int:category_id>/delete/")
     api.add_resource(CreateRecipeApi, "/api/recipes/create/")
+    api.add_resource(GetRecipesByCategoryApi, "/api/categories/<int:category_id>/recipes/")

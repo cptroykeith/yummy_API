@@ -159,6 +159,11 @@ def create_category(request, category_data):
     token = request.headers.get('Authorization')
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
+
+    # Check if the category already exists
+    existing_category = Category.query.filter_by(name=category_data['name'], user_id=user_id).first()
+    if existing_category:
+        return generate_response(message="Category already exists", status=HTTP_400_BAD_REQUEST)
     
     # Create new category with user ID
     new_category = Category(**category_data)
@@ -270,6 +275,14 @@ def create_recipe(request, recipe_data):
     # Get category ID from recipe_data or other source if needed
     category_id = recipe_data.get('category_id')
 
+    # Check if the recipe already exists for the given user and category
+    existing_recipe = Recipe.query.filter_by(user_id=user_id, category_id=category_id).first()
+    if existing_recipe:
+        return generate_response(
+            message="Recipe already exists for the given user and category",
+            status=HTTP_400_BAD_REQUEST
+        )
+
     # Create new recipe with user ID and category ID
     new_recipe = Recipe(**recipe_data)
     new_recipe.user_id = user_id
@@ -278,3 +291,15 @@ def create_recipe(request, recipe_data):
     db.session.commit()
 
     return generate_response(data=recipe_data, message="Recipe created", status=HTTP_201_CREATED)
+
+
+# Getting all recipes for a particular category and user
+
+def get_recipes_by_category(user_id, category_id):
+    recipes = Recipe.query.filter_by(user_id=user_id, category_id=category_id).all()
+    
+    if not recipes:
+        return generate_response(message="No recipes found for the given user and category", status=HTTP_404_NOT_FOUND)
+    
+    recipe_data = [recipe.to_dict() for recipe in recipes]
+    return generate_response(data=recipe_data, message="Recipes retrieved successfully", status=HTTP_200_OK)
