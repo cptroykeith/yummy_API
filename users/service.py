@@ -276,7 +276,7 @@ def create_recipe(request, recipe_data):
     category_id = recipe_data.get('category_id')
 
     # Check if the recipe already exists for the given user and category
-    existing_recipe = Recipe.query.filter_by(user_id=user_id, category_id=category_id).first()
+    existing_recipe = Recipe.query.filter_by(user_id=user_id, category_id=category_id, id=recipe_data.get('recipe_id')).first()
     if existing_recipe:
         return generate_response(
             message="Recipe already exists for the given user and category",
@@ -343,3 +343,23 @@ def edit_recipe(request, category_id, recipe_id, recipe_data):
     db.session.commit()
 
     return generate_response(data=recipe.to_dict(), message="Recipe edited successfully", status=HTTP_200_OK)
+
+# Deleting a recipe
+
+def delete_recipe(request, category_id, recipe_id):
+    # Get user ID from token in request headers
+    token = request.headers.get('Authorization')
+    decoded_token = TokenGenerator.decode_token(token)
+    user_id = decoded_token.get('id')
+
+    # Retrieve the recipe to be deleted
+    recipe = Recipe.query.filter_by(id=recipe_id, category_id=category_id, user_id=user_id).first()
+    if not recipe:
+        return generate_response(message="Recipe not found", status=HTTP_404_NOT_FOUND)
+
+    # Delete the recipe
+    db.session.delete(recipe)
+    db.session.commit()
+
+    return generate_response(message="Recipe deleted", status=HTTP_200_OK)
+
