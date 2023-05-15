@@ -303,3 +303,14 @@ def get_recipes_by_category(user_id, category_id):
     
     recipe_data = [recipe.to_dict() for recipe in recipes]
     return generate_response(data=recipe_data, message="Recipes retrieved successfully", status=HTTP_200_OK)
+
+# Get one recipe from recipe table
+
+def get_recipe_by_id(user_id, category_id, recipe_id):
+    recipe = Recipe.query.filter_by(user_id=user_id, category_id=category_id, id=recipe_id).first()
+
+    if not recipe:
+        return generate_response(message="Recipe not found", status=HTTP_404_NOT_FOUND)
+
+    recipe_data = recipe.to_dict()
+    return generate_response(data=recipe_data, message="Recipe retrieved successfully", status=HTTP_200_OK)

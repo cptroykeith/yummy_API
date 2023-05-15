@@ -1,7 +1,7 @@
 from flask import Response
 from flask_restful import Resource
 from flask import request, make_response
-from users.service import (create_user, get_recipes_by_category, reset_password_email_send, 
+from users.service import (create_user, get_recipe_by_id, get_recipes_by_category, reset_password_email_send, 
 login_user, reset_password, get_all_users, delete_user ,get_user_by_id,
 create_category, get_user_categories, get_category, edit_category,
 delete_category, create_recipe )
@@ -109,4 +109,16 @@ class GetRecipesByCategoryApi(Resource):
 
         # Retrieve recipes for the given user and category
         response = get_recipes_by_category(user_id, category_id)
+        return make_response(response)
+    
+class GetRecipeByCategoryApi(Resource):
+    @staticmethod
+    def get(category_id: int, recipe_id: int) -> Response:
+        # Get user ID from token in request headers
+        token = request.headers.get('Authorization')
+        decoded_token = TokenGenerator.decode_token(token)
+        user_id = decoded_token.get('id')
+
+        # Retrieve the recipe for the given user, category, and recipe ID
+        response = get_recipe_by_id(user_id, category_id, recipe_id)
         return make_response(response)
