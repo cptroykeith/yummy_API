@@ -248,6 +248,13 @@ def delete_category(request, category_id):
 
     if not category:
         return generate_response(message="Category not found", status=HTTP_404_NOT_FOUND)
+    
+     # Ask for user confirmation
+    confirmation = request.args.get('confirmation')
+
+    if not confirmation or confirmation.lower() != 'yes':
+        return generate_response(message="Please confirm deletion by providing 'confirmation=yes' query parameter", status=HTTP_400_BAD_REQUEST)
+
 
     # Delete the category from the database
     db.session.delete(category)
