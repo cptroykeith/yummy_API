@@ -43,7 +43,7 @@ class Category(db.Model):
 
     __tablename__ = "categories"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False)
+    name = db.Column(db.String(64), unique=True, nullable=False)
     description = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -67,7 +67,7 @@ class Recipe(db.Model):
 
     __tablename__ = "recipes"
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(64), nullable=False)
+    type = db.Column(db.String(64), unique=True, nullable=False)
     ingredients = db.Column(db.String(500), nullable=False)
     steps = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
