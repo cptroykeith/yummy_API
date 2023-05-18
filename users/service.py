@@ -7,6 +7,7 @@ from users.helper import send_forgot_password_email
 from users.models import User, Category, Recipe
 from flask_bcrypt import generate_password_hash
 from utils.common import generate_response, TokenGenerator
+from sqlalchemy.orm import joinedload
 from users.validation import (
     CreateLoginInputSchema,
     CreateResetPasswordEmailSendInputSchema,
@@ -252,10 +253,18 @@ def delete_category(request, category_id):
      # Ask for user confirmation
     confirmation = request.args.get('confirmation')
 
-    if not confirmation or confirmation.lower() != 'yes':
-        return generate_response(message="Please confirm deletion by providing 'confirmation=yes' query parameter", status=HTTP_400_BAD_REQUEST)
+    if not confirmation or confirmation.lower() not in ['yes', 'no']:
+        return generate_response(message="Please confirm deletion by providing 'confirmation=yes' query parameter or 'confirmation=no' to cancel deletion", status=HTTP_400_BAD_REQUEST)
 
+    if confirmation.lower() == 'no':
+        return generate_response(message="Category deletion canceled", status=HTTP_200_OK)
 
+# Delete the recipes associated with the category and user
+    recipes = Recipe.query.options(joinedload('category')).filter_by(category_id=category_id, user_id=user_id).all()
+    for recipe in recipes:
+        db.session.delete(recipe)
+    db.session.commit()
+    
     # Delete the category from the database
     db.session.delete(category)
     db.session.commit()
@@ -283,7 +292,7 @@ def create_recipe(request, recipe_data):
     category_id = recipe_data.get('category_id')
 
     # Check if the recipe already exists for the given user and category
-    existing_recipe = Recipe.query.filter_by(user_id=user_id, category_id=category_id, id=recipe_data.get('recipe_id')).first()
+    existing_recipe = Recipe.query.filter_by(type=input.get('recipe_id')).first() 
     if existing_recipe:
         return generate_response(
             message="Recipe already exists for the given user and category",
