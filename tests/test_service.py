@@ -33,3 +33,6 @@ def test_login_user(client):
     response = login_user(None, user_data)
     assert response[0].get("message"),"User login successfully" == "User login successfully"
     assert response[0].get("status"), HTTP_201_CREATED == HTTP_201_CREATED
+
+def get_all_users():
+    
