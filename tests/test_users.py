@@ -1,6 +1,7 @@
 import pytest
 from server import create_app
-from users.service import create_user, get_all_users, get_user_by_id, login_user
+from users.models import User
+from users.service import create_user, delete_user, get_all_users, get_user_by_id, login_user
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED
 
 
@@ -85,4 +86,30 @@ def test_get_user_by_id(client):
     # Assert the response
     assert response[0].get("status"), HTTP_200_OK == HTTP_200_OK
     assert response[0].get("message"),"User retrieved successfully" == "User retrieved successfully"
+
+def test_delete_user(client):
+    # Create a test user
+    user_data = {
+        "username": "testuser",
+        "email": "testuser@example.com",
+        "password": "testpassword"
+    }
+    create_user(None, user_data)
+
+    # Get the user ID
+    user_id = 1
+
+    # Call the delete_user endpoint
+    response = delete_user(None, user_id)
+
+    # Assert the response
+    assert response[0].get("status") == HTTP_200_OK
+    assert response[0].get("message") == "User deleted"
+
+    # Try to retrieve the user after deletion
+    deleted_user = User.query.get(user_id)
+
+    # Assert that the user is None, indicating deletion
+    assert deleted_user is None
+
     
