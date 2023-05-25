@@ -1,6 +1,6 @@
 import pytest
 from server import create_app
-from users.service import create_user, get_all_users, login_user
+from users.service import create_user, get_all_users, get_user_by_id, login_user
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED
 
 
@@ -66,3 +66,23 @@ def test_get_all_users(client):
     user2 = response.json["data"][1]
     assert user2["username"] == "steby"
     assert user2["email"] == "steby@gmail.com"
+
+def test_get_user_by_id(client):
+    # Create a test user
+    user_data = {
+        "username": "testuser",
+        "email": "testuser@example.com",
+        "password": "testpassword"
+    }
+    create_user(None, user_data)
+
+    # Get the user ID
+    user_id = 1
+
+    # Call the get_user_by_id endpoint
+    response = get_user_by_id(None, user_id)
+
+    # Assert the response
+    assert response[0].get("status"), HTTP_200_OK == HTTP_200_OK
+    assert response[0].get("message"),"User retrieved successfully" == "User retrieved successfully"
+    
