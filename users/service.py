@@ -1,4 +1,5 @@
 import json
+from flask import jsonify
 import jwt
 import datetime
 from server import db
@@ -48,12 +49,18 @@ def get_all_users(request):
     users = User.query.all()
     user_list = []
     for user in users:
-        user_data = {}
-        user_data["id"] = user.id
-        user_data["username"] = user.username
-        user_data["email"] = user.email
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email
+        }
         user_list.append(user_data)
-    return generate_response(data=user_list, message="All users retrieved", status=HTTP_200_OK)
+
+    response_data = {
+        "data": user_list,
+        "message": "All users retrieved"
+    }
+    return jsonify(response_data), HTTP_200_OK
 
 def get_user_by_id(request, user_id):
     user = User.query.filter_by(id=user_id).first()
