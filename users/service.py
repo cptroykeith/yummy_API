@@ -164,8 +164,10 @@ def create_category(request, category_data):
         return generate_response(message=errors)
 
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
+    print('token',token)
     decoded_token = TokenGenerator.decode_token(token)
+    print('decoded',decoded_token)
     user_id = decoded_token.get('id')
 
     # Check if the category already exists
