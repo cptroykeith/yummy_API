@@ -105,6 +105,38 @@ def test_get_category(mocker):
         assert response[0].get("status") == HTTP_200_OK
         assert response[0].get("message") == 'Category found'
 
+def test_get_category_not_found(mocker):
+    # Create the Flask app instance
+    app = create_app()
+
+    # Use the app context for the test
+    with app.app_context():
+        # Provide a non-existent category ID and user ID
+        category_id = 1
+        user_id = 2
+
+        # Generate a sample JWT token with a secret key
+        payload = {"id": user_id}  # Modify the payload as needed
+        secret_key = os.environ.get("SECRET_KEY")
+        token = jwt.encode(payload, secret_key, algorithm="HS256")
+
+        # Create a mock request object with the JWT token in the headers
+        request = MockRequest(headers={"Authorization": f"Bearer {token}"})
+
+        # Mock the Category.query.filter_by().first() method to return None
+        mock_category_query = mocker.patch.object(Category.query, "filter_by")
+        mock_category_query.return_value.first.return_value = None
+
+        # Call the get_category function with the mock request
+        response = get_category(request, category_id)
+
+        # Assert the response
+        expected_data = None
+
+        assert response[0].get("status") == HTTP_404_NOT_FOUND
+        assert response[0].get("message"), 'Category not found' == 'Category not found'
+        assert response[0].get("data") == expected_data
+
 
 def test_edit_category(mocker):
     # Create the Flask app instance
