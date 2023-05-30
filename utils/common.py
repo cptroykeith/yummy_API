@@ -75,6 +75,10 @@ class TokenGenerator:
         :param token: The token to decode
         :return: A dictionary with the user's id and username.
         """
+        print("Token:", token)
+        print("Token Type:", type(token))
+        print(os.environ.get("SECRET_KEY"))
+        print("Secret Key Type:", type(os.environ.get("SECRET_KEY")))
         return jwt.decode(
             token,
             os.environ.get("SECRET_KEY"),
