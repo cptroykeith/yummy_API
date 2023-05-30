@@ -384,4 +384,3 @@ def delete_recipe(request, category_id, recipe_id):
     db.session.commit()
 
     return generate_response(message="Recipe deleted", status=HTTP_200_OK)
-
