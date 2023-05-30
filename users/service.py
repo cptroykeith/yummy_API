@@ -247,7 +247,7 @@ def edit_category(request, category_id, category_data):
 #Delete a category
 def delete_category(request, category_id):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
