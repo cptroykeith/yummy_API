@@ -184,7 +184,7 @@ def create_category(request, category_data):
 #Get all categories for a user
 def get_user_categories(request):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -200,7 +200,7 @@ def get_user_categories(request):
 #Get one category for a user
 def get_category(request, category_id):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
