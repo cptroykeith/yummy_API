@@ -339,7 +339,6 @@ def get_recipe_by_id(user_id, category_id, recipe_id):
     return generate_response(data=recipe_data, message="Recipe retrieved successfully", status=HTTP_200_OK)
 
 #Editing a recipe
-
 def edit_recipe(request, category_id, recipe_id, recipe_data):
     # Validate recipe data using a validation schema
     edit_validation_schema = CreateRecipeInputSchema()
