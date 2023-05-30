@@ -1,49 +1,48 @@
+import collections
 import os
 import pytest
 import jwt
 from server import create_app
 from users.service import create_category
 from utils.http_code import HTTP_201_CREATED
-import collections
-
-
-@pytest.fixture
-def client():
-    """Create a test client using the Flask application instance."""
-    app = create_app()
-    app.config["TESTING"] = True  # Set the app to testing mode
-    with app.test_client() as client:
-        with app.app_context():
-            yield client
-
+from unittest.mock import patch, MagicMock
 
 MockRequest = collections.namedtuple("MockRequest", ["headers"])
 
-def test_create_category(client):
-    # Provide valid category data
-    category_data = {
-        "name": "Books",
-        "description": "Category for books"
-    }
+def test_create_category(mocker):
+    # Create the Flask app instance
+    app = create_app()
 
-    # Generate a sample JWT token with a secret key
-    payload = {"id": 2}  # Modify the payload as needed
-    secret_key = os.environ.get("SECRET_KEY")
-    token = jwt.encode(payload, secret_key,algorithm="HS256")
+    # Use the app context for the test
+    with app.app_context():
+        # Provide valid category data
+        category_data = {
+            "name": "Books",
+            "description": "Category for books"
+        }
+        os.environ["SECRET_KEY"] = 'this is a secret key'
 
-    # Create a mock request object with the JWT token in the headers
-    print('token here', token,type(token))
-    request = MockRequest(headers={"Authorization": f"Bearer {token}"})
-    headers={"Authorization": f"Bearer {token}"}
+        # Generate a sample JWT token with a secret key
+        payload = {"id": 2}  # Modify the payload as needed
+        secret_key = os.environ.get("SECRET_KEY")
+        token = jwt.encode(payload, secret_key, algorithm="HS256")
 
-    # Call the create_category function with the mock request
-    response = create_category(request, category_data)
+        # Create a mock request object with the JWT token in the headers
+        request = MockRequest(headers={"Authorization": f"Bearer {token}"})
 
-    # Assert the response
-    assert response[0].get("status"), HTTP_201_CREATED == HTTP_201_CREATED
-    assert response[0].get("message"), 'Category Created' ==  "Category created"
+        # Mock the database interaction
+        with patch("users.service.db") as mock_db:
+            mock_session = mock_db.session
+            mock_category = MagicMock()
+            mock_session.return_value = mock_session
+            mock_session.add.return_value = None
+            mock_session.commit.return_value = None
+            mock_db.Category = mock_category
 
-    print("response",response[0])
-    # Assert the returned data matches the provided category data
-    assert response[0].get("token") == category_data
-    #assert response[0].get("description") == category_data["description"]
+            # Call the create_category function with the mock request
+            response = create_category(request, category_data)
+
+        # Assert the response
+        assert response[0].get("status") == HTTP_201_CREATED
+        assert response[0].get("message") == 'Category created'
+        #assert response[0].get("data") == category_data
