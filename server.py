@@ -39,8 +39,8 @@ def create_app():
     mail.init_app(app)
 
     with app.app_context():
-
-        db.create_all()  # Create database tables for our data models
+        if not app.config["TESTING"]:
+            db.create_all()  # Create database tables for our data models
 
         return app
 
