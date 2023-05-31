@@ -36,6 +36,9 @@ jobs:
       - run:
           name: Install Requirements
           command: pip install -r requirements.txt
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
