@@ -7,16 +7,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flask_migrate import Migrate
 
-
+db = SQLAlchemy()
+mail = Mail()
 
 
 def create_app():
     """Construct the core application."""
-    db = SQLAlchemy()
-    mail = Mail()
-    app = Flask(__name__, instance_relative_config=False)
-    mail = Mail(app)
 
+    app = Flask(__name__, instance_relative_config=False)
     # This is the configuration for the email server.
     app.config["MAIL_SERVER"] = "smtp.gmail.com"
     app.config["MAIL_PORT"] = 465
