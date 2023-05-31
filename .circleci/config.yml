@@ -40,22 +40,21 @@ jobs:
           name: Install PostgreSQL client
           command: sudo apt-get install -y postgresql-client
       - run:
-          name: Start PostgreSQL service
-          command: |
-            sudo service postgresql start
-            sudo -u postgres psql -c "CREATE DATABASE mydatabase;"
-      - run:
           name: Set up PostgreSQL
           command: |
-            sudo service postgresql stop
-            sudo docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password postgres
-
+            docker run -d --name postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=yummydb -p 5432:5432 postgres:13
       # Configure environment variables
       - run:
           name: Configure environment variables
           command: |
             echo 'export DATABASE_URL=postgresql://royw:password@localhost:5432/yummydb' >> $BASH_ENV
             echo 'export PGHOST=localhost' >> $
+      - run:
+          name: Wait for PostgreSQL
+          command: |
+            until docker exec postgres pg_isready -U postgres -h localhost -p 5432; do
+              sleep 1
+            done
       - run:
           name: Install pytest
           command: pip install pytest
