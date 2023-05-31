@@ -3,7 +3,7 @@ import os
 import pytest
 import jwt
 from server import create_app
-from users.service import create_recipe, edit_recipe, get_recipe_by_id, get_recipes_by_category
+from users.service import create_recipe, delete_recipe, edit_recipe, get_recipe_by_id, get_recipes_by_category
 from users.models import Recipe
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from unittest.mock import patch, MagicMock
@@ -206,3 +206,68 @@ def test_edit_recipe_recipe_not_found():
         assert response[0].get("message"),'Recipe not found' == 'Recipe not found'
         assert response[0].get("data") is None
 
+
+def test_delete_recipe():
+    # Create the Flask app instance
+    app = create_app()
+
+    # Use the app context for the test
+    with app.app_context():
+        # Provide valid category ID and recipe ID
+        category_id = 1
+        recipe_id = 2
+
+        # Generate a sample JWT token with a secret key
+        payload = {"id": 1}  # Modify the payload as needed
+        secret_key = os.environ.get("SECRET_KEY")
+        token = jwt.encode(payload, secret_key, algorithm="HS256")
+
+        # Create a mock request object with the JWT token and confirmation query parameter
+        request = MockRequest(headers={"Authorization": f"Bearer {token}"})
+
+        # Mock the Recipe.query.filter_by method
+        with patch("users.service.Recipe.query.filter_by") as mock_query:
+            # Mock the Recipe object returned by the query
+            mock_recipe = Recipe(id=recipe_id, category_id=category_id, user_id=1)
+            mock_query.return_value.first.return_value = mock_recipe
+
+            # Mock the db.session.commit method
+            with patch("users.service.db.session.commit") as mock_commit:
+                # Call the delete_recipe function
+                response = delete_recipe(request, category_id, recipe_id)
+
+        # Assert the response
+        assert response[0].get("status"),HTTP_200_OK == HTTP_200_OK
+        assert response[0].get("message"),'Recipe deleted' == 'Recipe deleted'
+        assert response[0].get("data") is None
+
+def test_delete_recipe_recipe_not_found():
+    # Create the Flask app instance
+    app = create_app()
+
+    # Use the app context for the test
+    with app.app_context():
+        # Provide valid category ID and recipe ID
+        category_id = 1
+        recipe_id = 2
+
+        # Generate a sample JWT token with a secret key
+        payload = {"id": 1}  # Modify the payload as needed
+        secret_key = os.environ.get("SECRET_KEY")
+        token = jwt.encode(payload, secret_key, algorithm="HS256")
+
+        # Create a mock request object with the JWT token and confirmation query parameter
+        request = MockRequest(headers={"Authorization": f"Bearer {token}"})
+
+        # Mock the Recipe.query.filter_by method
+        with patch("users.service.Recipe.query.filter_by") as mock_query:
+            # Mock the Recipe object returned by the query as None (recipe not found)
+            mock_query.return_value.first.return_value = None
+
+            # Call the delete_recipe function
+            response = delete_recipe(request, category_id, recipe_id)
+
+        # Assert the response
+        assert response[0].get("status"),HTTP_404_NOT_FOUND == HTTP_404_NOT_FOUND
+        assert response[0].get("message"),'Recipe not found' == 'Recipe not found'
+        assert response[0].get("data") is None
