@@ -32,8 +32,11 @@ jobs:
       - run:
           name: Wait for db to run
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      # - run:
+      #     command: pip3 install -r requirements.txt
       - run:
-          command: pip3 install -r requirements.txt
+          name: Install pytest
+          command: pip install pytest
       - run:
           name: Running tests
           command: pytest
