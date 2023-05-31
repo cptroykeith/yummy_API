@@ -27,16 +27,17 @@ jobs:
     # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
     # Then run your tests!
     # CircleCI will report the results back to your VCS provider.
-    services:
-      - postgres
     environment:
       SECRET_KEY='this is a secret key'
+    executor: docker-executor
     steps:
       - checkout
       - python/install-packages:
           pkg-manager: pip
           # app-dir: ~/project/package-directory/  # If your requirements.txt isn't in the root directory.
           # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
+      - setup_remote_docker:
+          version: 20.10.7
       - run:
           name: Set up PostgreSQL
           command: |
