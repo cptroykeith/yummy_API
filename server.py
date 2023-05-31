@@ -7,12 +7,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flask_migrate import Migrate
 
-db = SQLAlchemy()
-mail = Mail()
+
 
 
 def create_app():
     """Construct the core application."""
+    db = SQLAlchemy()
+    mail = Mail()
     app = Flask(__name__, instance_relative_config=False)
     mail = Mail(app)
 
