@@ -49,12 +49,12 @@ jobs:
           command: |
             echo 'export DATABASE_URL=postgresql://royw:password@localhost:5432/yummydb' >> $BASH_ENV
             echo 'export PGHOST=localhost' >> $
-      - run:
-          name: Wait for PostgreSQL
-          command: |
-            until docker exec postgres pg_isready -U postgres -h localhost -p 5432; do
-              sleep 1
-            done
+      # - run:
+      #     name: Wait for PostgreSQL
+      #     command: |
+      #       until docker exec postgres pg_isready -U postgres -h localhost -p 5432; do
+      #         sleep 1
+      #       done
       - run:
           name: Install pytest
           command: pip install pytest
