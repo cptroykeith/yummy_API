@@ -184,7 +184,7 @@ def create_category(request, category_data):
 #Get all categories for a user
 def get_user_categories(request):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -200,7 +200,7 @@ def get_user_categories(request):
 #Get one category for a user
 def get_category(request, category_id):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -224,7 +224,7 @@ def edit_category(request, category_id, category_data):
         return generate_response(message=errors)
 
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -247,7 +247,7 @@ def edit_category(request, category_id, category_data):
 #Delete a category
 def delete_category(request, category_id):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -339,7 +339,6 @@ def get_recipe_by_id(user_id, category_id, recipe_id):
     return generate_response(data=recipe_data, message="Recipe retrieved successfully", status=HTTP_200_OK)
 
 #Editing a recipe
-
 def edit_recipe(request, category_id, recipe_id, recipe_data):
     # Validate recipe data using a validation schema
     edit_validation_schema = CreateRecipeInputSchema()
@@ -371,7 +370,7 @@ def edit_recipe(request, category_id, recipe_id, recipe_data):
 
 def delete_recipe(request, category_id, recipe_id):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization')
+    token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -385,4 +384,3 @@ def delete_recipe(request, category_id, recipe_id):
     db.session.commit()
 
     return generate_response(message="Recipe deleted", status=HTTP_200_OK)
-
