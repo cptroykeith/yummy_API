@@ -36,13 +36,19 @@ jobs:
           pkg-manager: pip
           # app-dir: ~/project/package-directory/  # If your requirements.txt isn't in the root directory.
           # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
-      - setup_remote_docker:
-          version: 20.10.7
+      - run:
+          name: Install PostgreSQL client
+          command: sudo apt-get install -y postgresql-client
+      - run:
+          name: Start PostgreSQL service
+          command: |
+            sudo service postgresql start
+            sudo -u postgres psql -c "CREATE DATABASE mydatabase;"
       - run:
           name: Set up PostgreSQL
           command: |
             sudo service postgresql stop
-            sudo docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password
+            sudo docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password postgres
 
       # Configure environment variables
       - run:
