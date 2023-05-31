@@ -1,3 +1,5 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
 # Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
@@ -12,41 +14,60 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  build-and-test:
+  build-and-test: # This is the name of the job, feel free to change it to better match what you're trying to do!
+    # These next lines defines a Docker executors: https://circleci.com/docs/executor-types/
+    # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
+    # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
+    # The executor is the environment in which the steps below will be executed - below will use a python 3.10.2 container
+    # Change the version below to your required version of python
     docker:
-      - image: circleci/python:3.8.0
-        environment:
-          ENV: CIRCLE
-          SQLALCHEMY_DATABASE_URI: postgresql://circleci@localhost/circle_test
-      - image: circleci/postgres:9.6
-        environment:
-          PGHOST: localhost
-          PGUSER: circleci
-          POSTGRES_USER: circleci
-          POSTGRES_DB: circle_test
-          POSTGRES_HOST_AUTH_METHOD: trust
+      - image: cimg/python:3.10.2
+      - image: cimg/postgres:15.3.0
+    # Checkout the code as the first step. This is a dedicated CircleCI step.
+    # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
+    # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
+    # Then run your tests!
+    # CircleCI will report the results back to your VCS provider.
+    environment:
+      SECRET_KEY: 'this is a secret key'
+      executor: docker-executor
     steps:
       - checkout
       - python/install-packages:
           pkg-manager: pip
+          # app-dir: ~/project/package-directory/  # If your requirements.txt isn't in the root directory.
+          # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
       - run:
-          name: Wait for db to run
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+          name: Install PostgreSQL client
+          command: sudo apt-get install -y postgresql-client
       # - run:
-      #     command: pip3 install -r requirements.txt
+      #     name: Set up PostgreSQL
+      #     command: |
+      #       docker run -d --name postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=yummydb -p 5432:5432 postgres:13
+      # Configure environment variables
+      - run:
+          name: Configure environment variables
+          command: |
+            echo 'export DATABASE_URL=postgresql://royw:password@localhost:5432/yummydb' >> $BASH_ENV
+            echo 'export PGHOST=localhost' >> $
+      - run:
+          name: Wait for PostgreSQL
+          command: |
+            until docker exec postgres pg_isready -U postgres -h localhost -p 5432; do
+              sleep 1
+            done
       - run:
           name: Install pytest
           command: pip install pytest
       - run:
-          name: Running tests
+          name: Run tests
+          # This assumes pytest is installed via the install-package step above
           command: pytest
-      - store_test_results:
-          path: test-reports.xml
-      - store_artifacts:
-          path: test-reports/
-          destination: python_app
 
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  main:
+  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+    # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
