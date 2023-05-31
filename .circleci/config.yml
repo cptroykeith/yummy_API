@@ -42,7 +42,7 @@ jobs:
           name: Set up PostgreSQL
           command: |
             sudo service postgresql stop
-            sudo docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password postgres
+            sudo docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password
 
       # Configure environment variables
       - run:
