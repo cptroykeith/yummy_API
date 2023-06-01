@@ -22,6 +22,13 @@ jobs:
     # Change the version below to your required version of python
     docker:
       - image: cimg/python:3.10.2
+      - image: cimg/postgres:15.3.0
+      auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+      environment:
+          POSTGRES_USER: postgres
+          SQLALCHEMY_DATABASE_URI: postgresql://postgres@localhost/circle_test
     # Checkout the code as the first step. This is a dedicated CircleCI step.
     # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
     # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
@@ -33,9 +40,9 @@ jobs:
           pkg-manager: pip
           # app-dir: ~/project/package-directory/  # If your requirements.txt isn't in the root directory.
           # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
-      - run:
-          name: Install Requirements
-          command: pip install -r requirements.txt
+      - python/install-packages:
+          pip-dependency-file: requirements.txt
+          pkg-manager: pip
       - setup_remote_docker:
           version: 20.10.14
           docker_layer_caching: true
