@@ -45,7 +45,7 @@ def create_user(request, input_data):
         data=input_data, message="User Created", status=HTTP_201_CREATED
     )
 
-def get_all_users(request):
+def get_all_users():
     users = User.query.all()
     user_list = []
     for user in users:

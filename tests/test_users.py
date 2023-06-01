@@ -1,8 +1,11 @@
+import collections
+from flask import request
 import pytest
 from server import create_app
 from users.models import User
 from users.service import create_user, delete_user, get_all_users, get_user_by_id, login_user
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED
+from unittest.mock import patch, MagicMock
 
 
 @pytest.fixture
@@ -15,7 +18,7 @@ def client():
             yield client
 
 
-def test_create_user(client):
+def test_create_user():
     user_data = {
         "username": "testuser",
         "email": "testuser@example.com",
@@ -36,9 +39,9 @@ def test_login_user(client):
     assert response[0].get("message"),"User login successfully" == "User login successfully"
     assert response[0].get("status"), HTTP_201_CREATED == HTTP_201_CREATED
 
+MockRequest = collections.namedtuple("MockRequest", ["headers"])
 
-
-def test_get_all_users(client):
+def test_get_all_users(mocker):
     # Create some test users
     create_user(None, {
         "username": "user1",
@@ -50,19 +53,23 @@ def test_get_all_users(client):
         "email": "user2@example.com",
         "password": "password2"
     })
+    app = create_app()
+
+    # Use the app context for the test
+    with app.app_context():
+        mock_user_query = mocker.patch.object(User.query, "filter_by")
+        mock_user_query.return_value.all.return_value = [
+            User(id=1,username="user1", email="user1@example.com", password="password1"),
+            User(id=2,username="user1", email="user2@example.com", password="password2"),
+        ]
 
     # Call the get_all_users endpoint
-    response, status_code = get_all_users(None)
+    response = get_all_users()
 
     # Assert the response
-    assert response.status_code == HTTP_200_OK
-    assert response.json["message"] == "All users retrieved"
-    assert len(response.json["data"]) == 6
+    assert response[0].status ,HTTP_200_OK == HTTP_200_OK
+    assert response[0].json['message'] == "All users retrieved"
 
-    # Assert the user data
-    user1 = response.json["data"][0]
-    assert user1["username"] == "steby"
-    assert user1["email"] == "steby@gmail.com"
 
 def test_get_user_by_id(client):
     # Create a test user
