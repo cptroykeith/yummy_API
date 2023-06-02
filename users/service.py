@@ -230,7 +230,6 @@ def edit_category(request, category_id, category_data):
 
     # Query the category with the specified ID for the user
     category = Category.query.filter_by(id=category_id, user_id=user_id).first()
-
     if not category:
         return generate_response(message="Category not found", status=HTTP_404_NOT_FOUND)
 
@@ -253,11 +252,10 @@ def delete_category(request, category_id):
 
     # Query the category with the specified ID for the user
     category = Category.query.filter_by(id=category_id, user_id=user_id).first()
-
     if not category:
         return generate_response(message="Category not found", status=HTTP_404_NOT_FOUND)
     
-     # Ask for user confirmation
+    # Ask for user confirmation
     confirmation = request.args.get('confirmation')
 
     if not confirmation or confirmation.lower() not in ['yes', 'no']:
@@ -266,7 +264,7 @@ def delete_category(request, category_id):
     if confirmation.lower() == 'no':
         return generate_response(message="Category deletion canceled", status=HTTP_200_OK)
 
-# Delete the recipes associated with the category and user
+    # Delete the recipes associated with the category and user
     recipes = Recipe.query.options(joinedload('category')).filter_by(category_id=category_id, user_id=user_id).all()
     for recipe in recipes:
         db.session.delete(recipe)
@@ -299,7 +297,7 @@ def create_recipe(request, recipe_data):
     category_id = recipe_data.get('category_id')
 
     # Check if the recipe already exists for the given user and category
-    existing_recipe = Recipe.query.filter_by(type=input.get('recipe_id')).first() 
+    existing_recipe = Recipe.query.filter_by(type=recipe_data.get('type')).first()
     if existing_recipe:
         return generate_response(
             message="Recipe already exists for the given user and category",
@@ -370,6 +368,8 @@ def edit_recipe(request, category_id, recipe_id, recipe_data):
 
 def delete_recipe(request, category_id, recipe_id):
     # Get user ID from token in request headers
+    authorization_header = request.headers.get('Authorization')
+    print('authorization_header',authorization_header)  
     token = request.headers.get('Authorization').split(' ')[1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
