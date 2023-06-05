@@ -1,11 +1,13 @@
 """App entry point."""
 """Initialize Flask app."""
 import os
-from flask import Flask
+from flask import Blueprint, Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flasgger import Swagger
+import yaml
 
 db = SQLAlchemy()
 mail = Mail()
@@ -37,11 +39,45 @@ def create_app():
     migrate = Migrate(app, db)
     mail.init_app(app)
 
+    swagger = Swagger(
+        app,
+        template={
+            "swagger": "2.0",
+            "info": {
+                "title": "Yummy_API",
+                "description": "An API to keep track of food categories and recipes",
+                "contact": {
+                    "name": "Roy William",
+                    "email": "katongole.roy100@gmail.com",
+                    "url": ""
+                },
+            },
+            "version": "1.0.0",
+            "basePath": "",
+            "schemes": ["http", "https"],
+            "securityDefinitions": {
+                "Bearer": {
+                    "type": "apiKey",
+                    "name": "Authorization",
+                    "in": "header"
+                }
+            },
+            "paths": {},
+        }
+    )
+
+    
+    # Load the Swagger specification from the YAML file
+    with open("docs/auth/register.yml", "r") as file:
+        spec = yaml.safe_load(file)
+
+    swagger.spec = spec
+
     with app.app_context():
         if not app.config["TESTING"]:
-            db.create_all()  # Create database tables for our data models
+            db.create_all()
 
-        return app
+    return app
 
 
 if __name__ == "__main__":

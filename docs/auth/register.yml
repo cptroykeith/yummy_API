@@ -1,0 +1,30 @@
+paths:
+  /api/auth/register/:
+    post:
+      tags:
+        - Authentication
+      summary: User Signup
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              firstname:
+                type: string
+              lastname:
+                type: string
+              username:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        201:
+          description: User successfully signed up
+        409:
+          description: Username or email already exists
+        422:
+          description: Validation error
