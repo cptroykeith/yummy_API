@@ -14,9 +14,10 @@ from users.validation import (
     CreateResetPasswordEmailSendInputSchema,
     CreateSignupInputSchema, ResetPasswordInputSchema, CreateCategoryInputSchema, CreateRecipeInputSchema
 )
-from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED
+from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED, HTTP_409_CONFLICT
+from flasgger import swag_from
 
-
+@swag_from('/docs/auth/register.yml')
 def create_user(request, input_data):
 
     create_validation_schema = CreateSignupInputSchema()
@@ -29,7 +30,7 @@ def create_user(request, input_data):
     check_email_exist = User.query.filter_by(email=input_data.get("email")).first()
     if check_username_exist:
         return generate_response(
-            message="Username already exist", status=HTTP_400_BAD_REQUEST
+            message="Username already exist", status=HTTP_409_CONFLICT
         )
     elif check_email_exist:
         return generate_response(

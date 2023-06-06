@@ -7,7 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flasgger import Swagger
-import yaml
 
 db = SQLAlchemy()
 mail = Mail()
@@ -61,20 +60,12 @@ def create_app():
                     "name": "Authorization",
                     "in": "header"
                 }
-            },
-            "paths": {},
+            }
         }
     )
 
-    
-    # Load the Swagger specification from the YAML file
-    with open("docs/auth/register.yml", "r") as file:
-        spec = yaml.safe_load(file)
-
-    swagger.spec = spec
 
     with app.app_context():
-        if not app.config["TESTING"]:
             db.create_all()
 
     return app
