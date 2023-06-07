@@ -1,5 +1,5 @@
 from flask_bcrypt import generate_password_hash, check_password_hash
-from users.models import User, Category, Recipe
+from app.models import User, Category, Recipe
 
 # Test User class
 def test_user():

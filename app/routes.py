@@ -1,5 +1,5 @@
 from flask_restful import Api
-from users.views import (DeleteRecipeApi, EditRecipeApi, GetRecipeByCategoryApi, GetRecipesByCategoryApi, LoginApi, ForgotPassword, SignUpApi,
+from .views import (DeleteRecipeApi, EditRecipeApi, GetRecipeByCategoryApi, GetRecipesByCategoryApi, LoginApi, ForgotPassword, SignUpApi,
 ResetPassword, AllUsersApi, UserApi, GetUserApi, CreateCategoryApi,
 GetUserCategoriesApi, GetCategoryApi, EditCategoryApi, DeleteCategoryApi,
 CreateRecipeApi)

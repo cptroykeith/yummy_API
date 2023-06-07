@@ -30,7 +30,7 @@ def create_app():
 
     api = Api(app=app)
 
-    from users.routes import create_authentication_routes
+    from app.routes import create_authentication_routes
 
     create_authentication_routes(api=api)
 
