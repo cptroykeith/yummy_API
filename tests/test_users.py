@@ -2,8 +2,8 @@ import collections
 from flask import request
 import pytest
 from server import create_app
-from users.models import User
-from users.service import create_user, delete_user, get_all_users, get_user_by_id, login_user
+from app.models import User
+from app.service import create_user, delete_user, get_all_users, get_user_by_id, login_user
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED
 from unittest.mock import patch, MagicMock
 

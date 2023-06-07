@@ -3,8 +3,8 @@ import os
 import pytest
 import jwt
 from server import create_app
-from users.service import create_category, delete_category, edit_category, get_category, get_user_categories
-from users.models import Category, Recipe
+from app.service import create_category, delete_category, edit_category, get_category, get_user_categories
+from app.models import Category, Recipe
 from utils.http_code import HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from unittest.mock import patch, MagicMock
 
