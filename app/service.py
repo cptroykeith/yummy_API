@@ -15,9 +15,7 @@ from .validation import (
     CreateSignupInputSchema, ResetPasswordInputSchema, CreateCategoryInputSchema, CreateRecipeInputSchema
 )
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED, HTTP_409_CONFLICT
-from flasgger import swag_from
 
-@swag_from('/docs/auth/register.yml')
 def create_user(request, input_data):
 
     create_validation_schema = CreateSignupInputSchema()

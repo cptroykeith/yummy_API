@@ -1,7 +1,7 @@
 from flask import Response
 from flask_restful import Resource
 from flask import request, make_response
-from .service import (create_user, delete_recipe, edit_recipe, get_recipe_by_id, get_recipes_by_category, reset_password_email_send, 
+from app.service import (create_user, delete_recipe, edit_recipe, get_recipe_by_id, get_recipes_by_category, reset_password_email_send, 
 login_user, reset_password, get_all_users, delete_user ,get_user_by_id,
 create_category, get_user_categories, get_category, edit_category,
 delete_category, create_recipe )
@@ -12,6 +12,43 @@ from utils.common import generate_response
 class SignUpApi(Resource):
     @staticmethod
     def post() -> Response:
+        """
+User Signup
+
+Endpoint for registering a new user with parameters: username, email, and password.
+
+---
+tags:
+  - Authentication
+parameters:
+  - in: body
+    name: body
+    required: true
+    description: JSON object containing user registration details
+    schema:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        {
+          "username": "roy",
+          "email": "roy@email.com",
+          "password": "********"
+        }
+responses:
+  201:
+    description: User Created
+  409:
+    description: Username already exists
+  400:
+    description: Email  already taken
+"""
+
    
         input_data = request.get_json()
         response, status = create_user(request, input_data)
