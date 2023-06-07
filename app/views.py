@@ -58,6 +58,45 @@ responses:
 class LoginApi(Resource):
     @staticmethod
     def post() -> Response:
+        """
+    User Login Endpoint
+    
+    This endpoint is used to authenticate a user by their email and password.
+    
+    ---
+    tags:
+      - Authentication
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              description: The email of the user.
+            password:
+              type: string
+              description: The password of the user.
+    responses:
+      201:
+        description: User login successful.
+        schema:
+          type: object
+          properties:
+            token:
+              type: string
+              description: The JWT token for the authenticated user.
+      400:
+        description: Invalid email or password.
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Error message indicating the reason for the failure.
+    """
         
         input_data = request.get_json()
         response, status = login_user(request, input_data)
