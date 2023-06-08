@@ -189,8 +189,35 @@ class GetUserApi(Resource):
 class UserApi(Resource):
     @staticmethod
     def delete(user_id: int) -> Response:
+        """
+        Delete User Endpoint
+
+        This endpoint deletes a user from the database based on the provided user ID.
+
+        ---
+        tags:
+          - Users
+        parameters:
+          - in: path
+            name: user_id
+            type: integer
+            required: true
+            description: The ID of the user to delete.
+        responses:
+          200:
+            description: User deleted successfully.
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Success message.
+          404:
+            description: User not found.
+        """
         response, status = delete_user(request, user_id)
         return make_response(response, status)
+
 
 
 class ForgotPassword(Resource):
