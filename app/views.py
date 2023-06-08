@@ -1,4 +1,4 @@
-from flask import Response
+from flask import Response, jsonify
 from flask_restful import Resource
 from flask import request, make_response
 from app.service import (create_user, delete_recipe, edit_recipe, get_recipe_by_id, get_recipes_by_category, reset_password_email_send, 
@@ -105,9 +105,41 @@ class LoginApi(Resource):
 class AllUsersApi(Resource):
     @staticmethod
     def get() -> Response:
-        
-        response, status = get_all_users(request)
+        """
+        Get All Users Endpoint
+
+        This endpoint retrieves all users from the database.
+
+        ---
+        tags:
+          - Users
+        responses:
+          200:
+            description: All users retrieved successfully.
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: The ID of the user.
+                      username:
+                        type: string
+                        description: The username of the user.
+                      email:
+                        type: string
+                        description: The email of the user.
+                message:
+                  type: string
+                  description: Success message.
+        """
+        response, status = get_all_users()
         return make_response(response, status)
+
     
 class GetUserApi(Resource):
     @staticmethod
