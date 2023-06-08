@@ -144,8 +144,47 @@ class AllUsersApi(Resource):
 class GetUserApi(Resource):
     @staticmethod
     def get(user_id) -> Response:
+        """
+        Get User by ID Endpoint
+
+        This endpoint retrieves a user from the database based on the provided user ID.
+
+        ---
+        tags:
+          - Users
+        parameters:
+          - in: path
+            name: user_id
+            type: integer
+            required: true
+            description: The ID of the user to retrieve.
+        responses:
+          200:
+            description: User retrieved successfully.
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The ID of the user.
+                    username:
+                      type: string
+                      description: The username of the user.
+                    email:
+                      type: string
+                      description: The email of the user.
+                message:
+                  type: string
+                  description: Success message.
+          404:
+            description: User not found.
+        """
         response, status = get_user_by_id(request, user_id)
         return make_response(response, status)
+
     
 class UserApi(Resource):
     @staticmethod
