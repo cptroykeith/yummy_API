@@ -96,6 +96,12 @@ def create_app():
                     },
                     "message": {"type": "string"}
                 }
+            },
+            "MessageResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
             }
         }
     }

@@ -375,10 +375,8 @@ def edit_recipe(request, category_id, recipe_id, recipe_data):
 # Deleting a recipe
 
 def delete_recipe(request, category_id, recipe_id):
-    # Get user ID from token in request headers
-    authorization_header = request.headers.get('Authorization')
-    print('authorization_header',authorization_header)  
-    token = request.headers.get('Authorization').split(' ')[1]
+    # Get user ID from token in request headers  
+    token = request.headers.get('Authorization').split(' ')[-1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 

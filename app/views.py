@@ -682,11 +682,38 @@ class EditRecipeApi(Resource):
 class DeleteRecipeApi(Resource):
     @staticmethod
     def delete(category_id: int, recipe_id: int) -> Response:
-        # Get user ID from token in request headers
-        token = request.headers.get('Authorization')
-        decoded_token = TokenGenerator.decode_token(token)
-        user_id = decoded_token.get('id')
+        """
+        Delete Recipe Endpoint
 
-        # Delete the recipe for the given user and category
+        This endpoint deletes the recipe with the specified ID for the user identified by the authorization token
+        present in the request headers.
+
+        ---
+        tags:
+          - Recipes
+        parameters:
+          - in: path
+            name: category_id
+            type: integer
+            required: true
+            description: The ID of the category to which the recipe belongs.
+          - in: path
+            name: recipe_id
+            type: integer
+            required: true
+            description: The ID of the recipe to delete.
+        security:
+          - Bearer: []
+        responses:
+          200:
+            description: Recipe deleted successfully.
+            schema:
+              $ref: "#/definitions/MessageResponse"
+          401:
+            description: Unauthorized access, missing or invalid authorization token.
+          404:
+            description: Recipe not found.
+        """
         response = delete_recipe(request, category_id, recipe_id)
         return make_response(response)
+    
