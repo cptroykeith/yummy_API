@@ -112,7 +112,7 @@ def test_get_category(mocker):
         response = get_category(request, 33)
 
         assert response[0].get("status") == HTTP_200_OK
-        # assert response[0].get("message") == 'Category found'
+        assert response[0].get("message") == 'Category found'
 
 def test_get_category_not_found(mocker):
     # Create the Flask app instance
