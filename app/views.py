@@ -536,6 +536,33 @@ class CreateRecipeApi(Resource):
 class GetRecipesByCategoryApi(Resource):
     @staticmethod
     def get(category_id: int) -> Response:
+        """
+        Get Recipes by Category Endpoint
+
+        This endpoint retrieves all recipes belonging to a specific category for the authenticated user.
+
+        ---
+        tags:
+          - Recipes
+        parameters:
+          - in: path
+            name: category_id
+            required: true
+            description: The ID of the category to filter recipes.
+            schema:
+              type: integer
+        security:
+          - Bearer: []
+        responses:
+          200:
+            description: Recipes retrieved successfully.
+            schema:
+              $ref: '#/definitions/RecipesResponse'
+          404:
+            description: No recipes found for the given user and category.
+          401:
+            description: Unauthorized access, missing or invalid authorization token.
+        """
         # Get user ID from token in request headers
         token = request.headers.get('Authorization')
         decoded_token = TokenGenerator.decode_token(token)
@@ -544,6 +571,7 @@ class GetRecipesByCategoryApi(Resource):
         # Retrieve recipes for the given user and category
         response = get_recipes_by_category(user_id, category_id)
         return make_response(response)
+
     
 class GetRecipeByCategoryApi(Resource):
     @staticmethod

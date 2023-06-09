@@ -39,30 +39,49 @@ def create_app():
     mail.init_app(app)
 
     swagger = Swagger(
-        app,
-        template={
-            "swagger": "2.0",
-            "info": {
-                "title": "Yummy_API",
-                "description": "An API to keep track of food categories and recipes",
-                "contact": {
-                    "name": "Roy William",
-                    "email": "katongole.roy100@gmail.com",
-                    "url": ""
-                },
+    app,
+    template={
+        "swagger": "2.0",
+        "info": {
+            "title": "Yummy_API",
+            "description": "An API to keep track of food categories and recipes",
+            "contact": {
+                "name": "Roy William",
+                "email": "katongole.roy100@gmail.com",
+                "url": ""
             },
-            "version": "1.0.0",
-            "basePath": "",
-            "schemes": ["http", "https"],
-            "securityDefinitions": {
-                "Bearer": {
-                    "type": "apiKey",
-                    "name": "Authorization",
-                    "in": "header"
+        },
+        "version": "1.0.0",
+        "basePath": "",
+        "schemes": ["http", "https"],
+        "securityDefinitions": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header"
+            }
+        },
+        "definitions": {
+            "RecipesResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "integer"},
+                                "name": {"type": "string"},
+                                "description": {"type": "string"}
+                            }
+                        }
+                    },
+                    "message": {"type": "string"}
                 }
             }
         }
-    )
+    }
+)
 
 
     with app.app_context():
