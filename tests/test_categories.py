@@ -72,47 +72,36 @@ def test_get_user_categories(mocker):
         assert response[0].get("status") == HTTP_200_OK
         assert response[0].get("message") == 'Categories retrieved'
 
-def test_get_category(mocker):
+def test_get_category():
     # Create the Flask app instance
     app = create_app()
 
     # Use the app context for the test
     with app.app_context():
-        payload = {"id": 2}  # Modify the payload as needed
-        secret_key = os.environ.get("SECRET_KEY")
-        token = jwt.encode(payload, secret_key, algorithm="HS256")
-        request = MockRequest(headers={"Authorization": f"Bearer {token}"})
-        # Provide a valid category ID and user ID
-        # category_id = 12
-        # user_id = 2
-         #Create some test users
-        create_category(request, {
-            "name":"pillawo2",
-            "description":"hot pillawo2",
-            "id":1,
-        })
-
-        # Generate a sample JWT token with a secret key
-        payload = {"id": 2}  # Modify the payload as needed
-        secret_key = os.environ.get("SECRET_KEY")
+        # Provide a valid user ID, category ID, and token
+        user_id = 1
+        category_id = 2
+        secret_key = "this is a secret key"  # Replace with your secret key
+        payload = {"id": user_id}
         token = jwt.encode(payload, secret_key, algorithm="HS256")
 
         # Create a mock request object with the JWT token in the headers
         request = MockRequest(headers={"Authorization": f"Bearer {token}"})
 
-        # Mock the Category.query.filter_by().first() method
-        mock_category_query = mocker.patch.object(Category.query, "filter_by")
-        mock_category_query.return_value.first.return_value = Category(
-            name="pillawo2",
-            description="hot pillawo2",
-        )
-        # import pdb; pdb.set_trace();
+        # Mock the Category.query.filter_by method
+        with patch("app.service.Category.query.filter_by") as mock_query:
+            # Mock the Category object returned by the query
+            mock_category = Category(id=category_id, user_id=user_id)
+            mock_query.return_value.first.return_value = mock_category
 
-        # Call the get_category function with the mock request
-        response = get_category(request, 33)
+            # Call the get_category function
+            response = get_category(request, category_id)
 
-        assert response[0].get("status") == HTTP_200_OK
-        assert response[0].get("message") == 'Category found'
+        # Assert the response
+        assert response[0].get("status"),HTTP_200_OK == HTTP_200_OK
+        assert response[0].get("message"),'Category found' == 'Category found'
+        #assert response[0].get("data"), mock_category.to_dict() == mock_category.to_dict()
+
 
 def test_get_category_not_found(mocker):
     # Create the Flask app instance
