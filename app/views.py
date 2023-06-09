@@ -292,30 +292,194 @@ class CreateCategoryApi(Resource):
         return make_response(response, status)
 
 
-    
 class GetUserCategoriesApi(Resource):
     @staticmethod
     def get() -> Response:
+        """
+        Get User Categories Endpoint
+
+        This endpoint retrieves all categories associated with the user identified by the authorization token
+        present in the request headers.
+
+        ---
+        tags:
+          - Categories
+        security:
+          - Bearer: []
+        responses:
+          200:
+            description: Categories retrieved successfully.
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: The name of the category.
+                      description:
+                        type: string
+                        description: The description of the category.
+                message:
+                  type: string
+                  description: Success message.
+          401:
+            description: Unauthorized access, missing or invalid authorization token.
+        """
         response, status = get_user_categories(request)
         return make_response(response, status)
     
 class GetCategoryApi(Resource):
     @staticmethod
     def get(category_id: int) -> Response:
+        """
+        Get Category Endpoint
+
+        This endpoint retrieves the category with the specified ID associated with the user identified by the
+        authorization token present in the request headers.
+
+        ---
+        tags:
+          - Categories
+        parameters:
+          - in: path
+            name: category_id
+            type: integer
+            required: true
+            description: The ID of the category to retrieve.
+        security:
+          - Bearer: []
+        responses:
+          200:
+            description: Category retrieved successfully.
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: The name of the category.
+                    description:
+                      type: string
+                      description: The description of the category.
+                message:
+                  type: string
+                  description: Success message.
+          401:
+            description: Unauthorized access, missing or invalid authorization token.
+          404:
+            description: Category not found.
+        """
         response, status = get_category(request, category_id)
         return make_response(response, status)
+
     
 class EditCategoryApi(Resource):
     def put(self, category_id: int) -> Response:
+        """
+        Edit Category Endpoint
+
+        This endpoint updates the category with the specified ID for the user identified by the authorization token
+        present in the request headers.
+
+        ---
+        tags:
+          - Categories
+        parameters:
+          - in: path
+            name: category_id
+            type: integer
+            required: true
+            description: The ID of the category to edit.
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The updated name of the category.
+                description:
+                  type: string
+                  description: The updated description of the category.
+        security:
+          - Bearer: []
+        responses:
+          200:
+            description: Category updated successfully.
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: The updated name of the category.
+                    description:
+                      type: string
+                      description: The updated description of the category.
+                message:
+                  type: string
+                  description: Success message.
+          401:
+            description: Unauthorized access, missing or invalid authorization token.
+          404:
+            description: Category not found.
+        """
         category_data = request.get_json()
         response, status = edit_category(request, category_id, category_data)
         return response, status
-    
+
 class DeleteCategoryApi(Resource):
-    @staticmethod
-    def delete(category_id: int) -> Response:
+    def delete(self, category_id: int) -> Response:
+        """
+        Delete Category Endpoint
+
+        This endpoint deletes the category with the specified ID for the user identified by the authorization token
+        present in the request headers. It also deletes all the recipes associated with the category and user.
+
+        ---
+        tags:
+          - Categories
+        parameters:
+          - in: path
+            name: category_id
+            type: integer
+            required: true
+            description: The ID of the category to delete.
+          - in: query
+            name: confirmation
+            type: string
+            required: false
+            description: The confirmation parameter ('yes' or 'no') to confirm or cancel deletion.
+        security:
+          - Bearer: []
+        responses:
+          200:
+            description: Category deleted successfully.
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Success message.
+          400:
+            description: Invalid confirmation parameter or missing confirmation parameter.
+          401:
+            description: Unauthorized access, missing or invalid authorization token.
+          404:
+            description: Category not found.
+        """
         response, status = delete_category(request, category_id)
         return make_response(response, status)
+
 
 class CreateRecipeApi(Resource):
     @staticmethod
