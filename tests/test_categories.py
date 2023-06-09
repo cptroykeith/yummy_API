@@ -32,7 +32,7 @@ def test_create_category(mocker):
         request = MockRequest(headers={"Authorization": f"Bearer {token}"})
 
         # Mock the database interaction
-        with patch("users.service.db") as mock_db:
+        with patch("app.service.db") as mock_db:
             mock_session = mock_db.session
             mock_category = MagicMock()
             mock_session.return_value = mock_session
