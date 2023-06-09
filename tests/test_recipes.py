@@ -33,7 +33,7 @@ def test_create_recipe(mocker):
         request = MockRequest(headers={"Authorization": f"Bearer {token}"})
 
         # Mock the database interaction
-        with patch("users.service.db") as mock_db:
+        with patch("app.service.db") as mock_db:
             mock_session = mock_db.session
             mock_recipe = MagicMock()
             mock_session.return_value = mock_session
@@ -103,7 +103,7 @@ def test_get_recipe_by_id():
         recipe_id = 3
 
         # Mock the Recipe.query.filter_by method
-        with patch("users.service.Recipe.query.filter_by") as mock_query:
+        with patch("app.service.Recipe.query.filter_by") as mock_query:
             # Mock the Recipe object returned by the query
             mock_recipe = Recipe(id=recipe_id, user_id=user_id, category_id=category_id)
             mock_query.return_value.first.return_value = mock_recipe
@@ -127,7 +127,7 @@ def test_get_recipe_by_id_recipe_not_found():
         recipe_id = 3
 
         # Mock the Recipe.query.filter_by method
-        with patch("users.service.Recipe.query.filter_by") as mock_query:
+        with patch("app.service.Recipe.query.filter_by") as mock_query:
             # Mock the Recipe object returned by the query as None (recipe not found)
             mock_query.return_value.first.return_value = None
 
@@ -160,13 +160,13 @@ def test_edit_recipe():
         request = MockRequest(headers={"Authorization": "Bearer JWT_TOKEN"})
 
         # Mock the Recipe.query.filter_by method
-        with patch("users.service.Recipe.query.filter_by") as mock_query:
+        with patch("app.service.Recipe.query.filter_by") as mock_query:
             # Mock the Recipe object returned by the query
             mock_recipe = Recipe(id=recipe_id, category_id=category_id, user_id=1)
             mock_query.return_value.first.return_value = mock_recipe
 
             # Mock the db.session.commit method
-            with patch("users.service.db.session.commit") as mock_commit:
+            with patch("app.service.db.session.commit") as mock_commit:
                 # Call the edit_recipe function
                 response = edit_recipe(request, category_id, recipe_id, recipe_data)
 
@@ -194,7 +194,7 @@ def test_edit_recipe_recipe_not_found():
         request = MockRequest(headers={"Authorization": "Bearer JWT_TOKEN"})
 
         # Mock the Recipe.query.filter_by method
-        with patch("users.service.Recipe.query.filter_by") as mock_query:
+        with patch("app.service.Recipe.query.filter_by") as mock_query:
             # Mock the Recipe object returned by the query as None (recipe not found)
             mock_query.return_value.first.return_value = None
 
@@ -226,13 +226,13 @@ def test_delete_recipe():
         request = MockRequest(headers={"Authorization": f"Bearer {token}"})
 
         # Mock the Recipe.query.filter_by method
-        with patch("users.service.Recipe.query.filter_by") as mock_query:
+        with patch("app.service.Recipe.query.filter_by") as mock_query:
             # Mock the Recipe object returned by the query
             mock_recipe = Recipe(id=recipe_id, category_id=category_id, user_id=1)
             mock_query.return_value.first.return_value = mock_recipe
 
             # Mock the db.session.commit method
-            with patch("users.service.db.session.commit") as mock_commit:
+            with patch("app.service.db.session.commit") as mock_commit:
                 # Call the delete_recipe function
                 response = delete_recipe(request, category_id, recipe_id)
 
@@ -260,7 +260,7 @@ def test_delete_recipe_recipe_not_found():
         request = MockRequest(headers={"Authorization": f"Bearer {token}"})
 
         # Mock the Recipe.query.filter_by method
-        with patch("users.service.Recipe.query.filter_by") as mock_query:
+        with patch("app.service.Recipe.query.filter_by") as mock_query:
             # Mock the Recipe object returned by the query as None (recipe not found)
             mock_query.return_value.first.return_value = None
 
