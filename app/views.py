@@ -619,9 +619,65 @@ class GetRecipeByCategoryApi(Resource):
 class EditRecipeApi(Resource):
     @staticmethod
     def put(category_id: int, recipe_id: int) -> Response:
+        """
+        Edit Recipe
+
+        This endpoint allows editing a recipe for the given user, category, and recipe ID.
+        The user is identified by the authorization token present in the request headers.
+
+        ---
+        tags:
+          - Recipes
+        parameters:
+          - in: path
+            name: category_id
+            required: true
+            type: integer
+            description: The ID of the category.
+          - in: path
+            name: recipe_id
+            required: true
+            type: integer
+            description: The ID of the recipe.
+          - in: body
+            name: recipe_data
+            required: true
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The type of the recipe.
+                ingredients:
+                  type: string
+                  description: The ingredients used in the recipe.
+                steps:
+                  type: string
+                  description: The steps to prepare the recipe.
+                category_id:
+                  type: integer
+                  description: The ID of the category the recipe belongs to.
+              example:
+                type: "Main Course"
+                ingredients: "Ingredient 1, Ingredient 2"
+                steps: "Step 1, Step 2, Step 3"
+                category_id: 1
+        security:
+          - Bearer: []
+        responses:
+          200:
+            description: Recipe edited successfully.
+            schema:
+              $ref: '#/definitions/RecipeResponse'
+          400:
+            description: Bad request. Invalid recipe data.
+          404:
+            description: Recipe not found.
+        """
         recipe_data = request.get_json()
         response, status = edit_recipe(request, category_id, recipe_id, recipe_data)
         return make_response(response, status)
+
     
 class DeleteRecipeApi(Resource):
     @staticmethod

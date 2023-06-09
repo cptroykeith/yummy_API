@@ -71,9 +71,27 @@ def create_app():
                             "type": "object",
                             "properties": {
                                 "id": {"type": "integer"},
-                                "name": {"type": "string"},
-                                "description": {"type": "string"}
+                                "type": {"type": "string"},
+                                "ingredients": {"type": "string"},
+                                "steps": {"type": "string"},
+                                "category_id": {"type": "integer"}
                             }
+                        }
+                    },
+                    "message": {"type": "string"}
+                }
+            },
+            "RecipeResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "integer"},
+                            "type": {"type": "string"},
+                            "ingredients": {"type": "string"},
+                            "steps": {"type": "string"},
+                            "category_id": {"type": "integer"}
                         }
                     },
                     "message": {"type": "string"}
