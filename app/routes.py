@@ -6,7 +6,6 @@ CreateRecipeApi)
 
 
 def create_authentication_routes(api: Api):
-    
     api.add_resource(SignUpApi, "/api/auth/register/")
     api.add_resource(LoginApi, "/api/auth/login/")
     api.add_resource(AllUsersApi, "/api/auth/users/")

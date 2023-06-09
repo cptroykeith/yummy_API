@@ -15,9 +15,7 @@ from .validation import (
     CreateSignupInputSchema, ResetPasswordInputSchema, CreateCategoryInputSchema, CreateRecipeInputSchema
 )
 from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED, HTTP_409_CONFLICT
-from flasgger import swag_from
 
-@swag_from('/docs/auth/register.yml')
 def create_user(request, input_data):
 
     create_validation_schema = CreateSignupInputSchema()
@@ -163,9 +161,18 @@ def create_category(request, category_data):
     errors = create_validation_schema.validate(category_data)
     if errors:
         return generate_response(message=errors)
+    
+    # Check if the Authorization header is present
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        print("Authorization header is missing")
+        return generate_response(message="Authorization header is missing", status=HTTP_401_UNAUTHORIZED)
+
+    print("Authorization header value:", auth_header)
+
 
     # Get user ID from token in request headers 
-    token = request.headers.get('Authorization').split(' ')[1]
+    token = request.headers.get('Authorization').split(' ')[-1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -185,7 +192,7 @@ def create_category(request, category_data):
 #Get all categories for a user
 def get_user_categories(request):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization').split(' ')[1]
+    token = request.headers.get('Authorization').split(' ')[-1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -201,7 +208,7 @@ def get_user_categories(request):
 #Get one category for a user
 def get_category(request, category_id):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization').split(' ')[1]
+    token = request.headers.get('Authorization').split(' ')[-1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -225,7 +232,7 @@ def edit_category(request, category_id, category_data):
         return generate_response(message=errors)
 
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization').split(' ')[1]
+    token = request.headers.get('Authorization').split(' ')[-1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -247,7 +254,7 @@ def edit_category(request, category_id, category_data):
 #Delete a category
 def delete_category(request, category_id):
     # Get user ID from token in request headers
-    token = request.headers.get('Authorization').split(' ')[1]
+    token = request.headers.get('Authorization').split(' ')[-1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
@@ -368,10 +375,8 @@ def edit_recipe(request, category_id, recipe_id, recipe_data):
 # Deleting a recipe
 
 def delete_recipe(request, category_id, recipe_id):
-    # Get user ID from token in request headers
-    authorization_header = request.headers.get('Authorization')
-    print('authorization_header',authorization_header)  
-    token = request.headers.get('Authorization').split(' ')[1]
+    # Get user ID from token in request headers  
+    token = request.headers.get('Authorization').split(' ')[-1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 
