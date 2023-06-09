@@ -43,11 +43,8 @@ def test_create_category(mocker):
             # Call the create_category function with the mock request
             response = create_category(request, category_data)
 
-            # Print the response dictionary object
-            print('response',response[-1])
-
         # Assert the response
-        assert response[-1].get("status") == HTTP_201_CREATED
+        assert response[0].get("status") == HTTP_201_CREATED
         assert response[0].get("message") == 'Category created'
 
 def test_get_user_categories(mocker):
