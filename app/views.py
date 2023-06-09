@@ -576,6 +576,36 @@ class GetRecipesByCategoryApi(Resource):
 class GetRecipeByCategoryApi(Resource):
     @staticmethod
     def get(category_id: int, recipe_id: int) -> Response:
+        """
+        Get Recipe by Category and Recipe ID
+
+        This endpoint retrieves a specific recipe for the given user, category, and recipe ID.
+        The user is identified by the authorization token present in the request headers.
+
+        ---
+        tags:
+          - Recipes
+        parameters:
+          - in: path
+            name: category_id
+            required: true
+            type: integer
+            description: The ID of the category.
+          - in: path
+            name: recipe_id
+            required: true
+            type: integer
+            description: The ID of the recipe.
+        security:
+          - Bearer: []
+        responses:
+          200:
+            description: Recipe retrieved successfully.
+            schema:
+              $ref: '#/definitions/RecipeResponse'
+          404:
+            description: Recipe not found.
+        """
         # Get user ID from token in request headers
         token = request.headers.get('Authorization')
         decoded_token = TokenGenerator.decode_token(token)
@@ -584,6 +614,7 @@ class GetRecipeByCategoryApi(Resource):
         # Retrieve the recipe for the given user, category, and recipe ID
         response = get_recipe_by_id(user_id, category_id, recipe_id)
         return make_response(response)
+
 
 class EditRecipeApi(Resource):
     @staticmethod
