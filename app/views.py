@@ -484,6 +484,51 @@ class DeleteCategoryApi(Resource):
 class CreateRecipeApi(Resource):
     @staticmethod
     def post() -> Response:
+        """
+        Create Recipe Endpoint
+
+        This endpoint creates a new recipe in the database based on the provided recipe data.
+        The recipe is associated with the user identified by the authorization token present in the request headers.
+
+        ---
+        tags:
+          - Recipes
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: The type of the recipe.
+                ingredients:
+                  type: string
+                  description: The list of ingredients required for the recipe.
+                steps:
+                  type: string
+                  description: The steps or instructions for preparing the recipe.
+                category_id:
+                  type: integer
+                  description: The ID of the category to which the recipe belongs.
+              required:
+                - type
+                - ingredients
+                - steps
+                - category_id
+        security:
+          - Bearer: []
+        responses:
+          201:
+            description: Recipe created successfully.
+            schema:
+              $ref: '#/definitions/RecipeResponse'
+          400:
+            description: Invalid input data or recipe already exists.
+          401:
+            description: Unauthorized access, missing or invalid authorization token.
+        """
         recipe_data = request.get_json()
         response, status = create_recipe(request, recipe_data)
         return make_response(response, status)
