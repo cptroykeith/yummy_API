@@ -161,9 +161,18 @@ def create_category(request, category_data):
     errors = create_validation_schema.validate(category_data)
     if errors:
         return generate_response(message=errors)
+    
+    # Check if the Authorization header is present
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        print("Authorization header is missing")
+        return generate_response(message="Authorization header is missing", status=HTTP_401_UNAUTHORIZED)
+
+    print("Authorization header value:", auth_header)
+
 
     # Get user ID from token in request headers 
-    token = request.headers.get('Authorization').split(' ')[1]
+    token = request.headers.get('Authorization').split(' ')[-1]
     decoded_token = TokenGenerator.decode_token(token)
     user_id = decoded_token.get('id')
 

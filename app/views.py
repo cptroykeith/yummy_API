@@ -240,9 +240,58 @@ class ResetPassword(Resource):
 class CreateCategoryApi(Resource):
     @staticmethod
     def post() -> Response:
-         input_data = request.get_json()
-         response, status = create_category(request, input_data)
-         return make_response(response, status)
+        """
+        Create Category Endpoint
+
+        This endpoint creates a new category in the database based on the provided category data.
+        The category is associated with the user identified by the authorization token present in the request headers.
+
+        ---
+        tags:
+          - Categories
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the category.
+                description:
+                  type: string
+                  description: The description of the category.
+        security:
+          - Bearer: []
+        responses:
+          201:
+            description: Category created successfully.
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: The name of the category.
+                    description:
+                      type: string
+                      description: The description of the category.
+                message:
+                  type: string
+                  description: Success message.
+          400:
+            description: Invalid input data or category already exists.
+          401:
+            description: Unauthorized access, missing or invalid authorization token.
+        """
+        input_data = request.get_json()
+        response, status = create_category(request, input_data)
+        return make_response(response, status)
+
+
     
 class GetUserCategoriesApi(Resource):
     @staticmethod
