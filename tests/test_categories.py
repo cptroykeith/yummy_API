@@ -10,7 +10,7 @@ from unittest.mock import patch, MagicMock
 
 MockRequest = collections.namedtuple("MockRequest", ["headers"])
 
-def test_create_category(mocker):
+def test_create_category():
     # Create the Flask app instance
     app = create_app()
 
@@ -287,7 +287,7 @@ def test_delete_category_not_found(mocker):
         assert response[0].get("status"),HTTP_404_NOT_FOUND == HTTP_404_NOT_FOUND
         assert response[0].get("message"),'Category not found' == 'Category not found'
 
-def test_delete_category_cancel_deletion(mocker):
+def test_delete_category_cancel_deletion():
     MockRequest = collections.namedtuple("MockRequest", ["headers", "args"])
     # Create the Flask app instance
     app = create_app()
@@ -313,7 +313,7 @@ def test_delete_category_cancel_deletion(mocker):
         assert response[0].get("status"), HTTP_200_OK == HTTP_200_OK
         assert response[0].get("message"), 'Category deletion canceled' == 'Category deletion canceled'
 
-def test_delete_category_invalid_confirmation(mocker):
+def test_delete_category_invalid_confirmation():
     MockRequest = collections.namedtuple("MockRequest", ["headers", "args"])
     # Create the Flask app instance
     app = create_app()

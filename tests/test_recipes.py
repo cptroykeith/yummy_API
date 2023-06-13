@@ -5,12 +5,12 @@ import jwt
 from server import create_app
 from app.service import create_recipe, delete_recipe, edit_recipe, get_recipe_by_id, get_recipes_by_category
 from app.models import Recipe
-from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from unittest.mock import patch, MagicMock
 
 MockRequest = collections.namedtuple("MockRequest", ["headers"])
 
-def test_create_recipe(mocker):
+def test_create_recipe():
     # Create the Flask app instance
     app = create_app()
 
