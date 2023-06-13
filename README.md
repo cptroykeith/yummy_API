@@ -1,1 +1,2 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/cptroykeith/yummy_API/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/cptroykeith/yummy_API/tree/main)
+[![Coverage Status](https://coveralls.io/repos/github/cptroykeith/yummy_API/badge.svg?branch=main)](https://coveralls.io/github/cptroykeith/yummy_API?branch=main)
