@@ -14,19 +14,14 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  build-and-test: # This is the name of the job, feel free to change it to better match what you're trying to do!
-    # These next lines defines a Docker executors: https://circleci.com/docs/executor-types/
-    # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
-    # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
-    # The executor is the environment in which the steps below will be executed - below will use a python 3.10.2 container
-    # Change the version below to your required version of python
+  build-and-test:
     docker:
       - image: cimg/python:3.10
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://postgres@localhost/circle_test
         auth:
           username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+          password: $DOCKERHUB_PASSWORD
 
     # Service container image
       - image: cimg/postgres:14.0
@@ -34,12 +29,8 @@ jobs:
           POSTGRES_USER: postgres
         auth:
           username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD  
-    # Checkout the code as the first step. This is a dedicated CircleCI step.
-    # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
-    # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
-    # Then run your tests!
-    # CircleCI will report the results back to your VCS provider.
+          password: $DOCKERHUB_PASSWORD
+
     steps:
       - checkout
       - python/install-packages:
@@ -49,18 +40,27 @@ jobs:
       - python/install-packages:
           pip-dependency-file: requirements.txt
           pkg-manager: pip
-      - setup_remote_docker:
-          version: 20.10.14
-          docker_layer_caching: true
+
+      # Install the Coveralls package
       - run:
-          name: Run tests
-          # This assumes pytest is installed via the install-package step above
-          command: pytest
+          name: Install Coveralls
+          command: pip install coveralls
+
+      # Run tests and generate coverage report
+      - run:
+          name: Run tests and coverage
+          command: |
+            coverage run -m pytest
+            coverage xml -i -o coverage.xml
+
+      # Upload coverage report to Coveralls
+      - run:
+          name: Upload coverage to Coveralls
+          command: coveralls
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  sample:
     jobs:
       - build-and-test
