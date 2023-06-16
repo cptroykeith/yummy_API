@@ -14,5 +14,4 @@ services:
 
 deploy:
   - name: Web
-    command: python server.py
-    port: 8000
+    command: gunicorn app:app --bind 0.0.0.0:$PORT
