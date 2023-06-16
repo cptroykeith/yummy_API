@@ -3,7 +3,7 @@ name: yummy_api
 
 env:
   - key: PYTHON_VERSION
-    value: "3.8"
+    value: "3.9.12"
 
 build:
   - name: Install Dependencies
