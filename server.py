@@ -8,13 +8,16 @@ from flask_mail import Mail
 from flask_migrate import Migrate
 from flasgger import Swagger
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 db = SQLAlchemy()
 mail = Mail()
 
 
 def create_app():
     """Construct the core application."""
-
+    print("Creating the Flask application...")
     app = Flask(__name__, instance_relative_config=False)
     # This is the configuration for the email server.
     app.config["MAIL_SERVER"] = "smtp.gmail.com"
@@ -110,10 +113,11 @@ def create_app():
 
     with app.app_context():
             db.create_all()
-
+    print("Flask application created successfully!")
     return app
 
+app = create_app()  # Create the Flask application object
 
 if __name__ == "__main__":
-    app = create_app()
+    print("Flask application created successfully!")
     app.run(host="0.0.0.0", port=8080)
