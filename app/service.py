@@ -5,7 +5,7 @@ import datetime
 from server import db
 from os import environ
 from app.helper import send_forgot_password_email
-from app.models import User, Category, Recipe
+from . models import User, Category, Recipe
 from flask_bcrypt import generate_password_hash
 from utils.common import generate_response, TokenGenerator
 from sqlalchemy.orm import joinedload
