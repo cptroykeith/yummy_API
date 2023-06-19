@@ -14,4 +14,4 @@ services:
 
 deploy:
   - name: Web
-    command: python server.py
+    command: gunicorn server:app
