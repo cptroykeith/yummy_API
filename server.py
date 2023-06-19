@@ -113,11 +113,9 @@ def create_app():
 
     with app.app_context():
             db.create_all()
-    print("Flask application created successfully!")
     return app
 
 app = create_app()  # Create the Flask application object
 
 if __name__ == "__main__":
-    print("Flask application created successfully!")
     app.run(host="0.0.0.0", port=8080)
