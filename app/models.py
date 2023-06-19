@@ -2,7 +2,7 @@
 import datetime
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from . import db
+from server import db
 from sqlalchemy.orm import relationship
 
 
