@@ -1,6 +1,6 @@
 # example netlify.toml
 [build]
-  command = "python3 server.py"
+  command = "python server.py"
   functions = "netlify/functions"
   publish = "./"
 
