@@ -1,2 +1,4 @@
 .env
 .coveralls
+# Local Netlify folder
+.netlify
