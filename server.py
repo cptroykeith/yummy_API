@@ -14,10 +14,10 @@ logging.basicConfig(level=logging.DEBUG)
 db = SQLAlchemy()
 mail = Mail()
 
-app = Flask(__name__, instance_relative_config=False)
+
 def create_app():
     """Construct the core application."""
-    
+    app = Flask(__name__, instance_relative_config=False)
     # This is the configuration for the email server.
     app.config["MAIL_SERVER"] = "smtp.gmail.com"
     app.config["MAIL_PORT"] = 465
